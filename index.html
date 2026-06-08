@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <meta name="theme-color" content="#f5a623">
   <title>Мой Табель</title>
-  <!-- Для PWA нужен отдельный файл manifest.json, но мета-теги ниже помогут на iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Табель">
@@ -47,8 +46,8 @@
     /* Buttons */
     .btn { background: #f5a623; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #000; width: 100%; cursor: pointer; }
     .btn:active { opacity: 0.8; }
-    .btn-small { background: #1e1e1e; border: 1px solid #2a2a2a; color: #aaa; padding: 10px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; }    .btn-small:hover { border-color: #f5a623; color: #f5a623; }
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .btn-small { background: #1e1e1e; border: 1px solid #2a2a2a; color: #aaa; padding: 10px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; }
+    .btn-small:hover { border-color: #f5a623; color: #f5a623; }    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     
     /* Table */
     .table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid #2a2a2a; }
@@ -145,8 +144,8 @@
       <div class="section-title">Вставь сообщения из чата</div>
       <textarea class="field-textarea" id="chat-in" placeholder="Дмитрий Самарский:
 06.05 764 
-9 просека - ракита 1 рейс9 просека - база 2 рейса
-Простой 2 часа 40 минут
+9 просека - ракита 1 рейс
+9 просека - база 2 рейсаПростой 2 часа 40 минут
 
 Вашик:
 07.05 эп
@@ -182,7 +181,7 @@
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn-small" id="copy-text-btn">📋 Копировать текстом</button>
+      <button class="btn-small" id="copy-text-btn"> Копировать текстом</button>
       <button class="btn-small" id="clear-all-btn" style="color:#e74c3c;">✕ Очистить</button>
     </div>
   </div>
@@ -194,8 +193,8 @@
       <div class="total-row"><span class="total-label">Всего рейсов</span><span class="total-value" id="tot-t">0</span></div>
       <div class="total-row"><span class="total-label">Начислено по табелю</span><span class="total-value orange" id="tot-p">0 ₽</span></div>
       <div class="total-row"><span class="total-label">База расчёта <span id="baza-hint" style="font-size:10px;"></span></span><span class="total-value green" id="tot-baza">0 ₽</span></div>
-      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>
-      <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
+      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>
+      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>      <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
       <div class="total-row" style="border-top:2px solid #2a2a2a; margin-top:8px; padding-top:14px;">
         <span class="total-label" style="font-weight:800;">НА РУКИ</span>
         <span class="total-value hand-value green" id="tot-rest">0 ₽</span>
@@ -203,7 +202,7 @@
     </div>
     <div class="btn-row" style="margin-top:16px;">
       <button class="btn" id="save-pdf-btn" style="background:#f5a623; color:#000;">📄 Сохранить PDF</button>
-      <button class="btn" id="share-pdf-btn" style="background:#25D366; color:#000;">📤 Отправить PDF</button>
+      <button class="btn" id="share-pdf-btn" style="background:#25D366; color:#000;"> Отправить PDF</button>
     </div>
   </div>
 </div>
@@ -243,8 +242,8 @@
   const MACHINE_LABELS = {
     '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
     '607':'Эвак 607','628':'Эвак 628',
-    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'
-  };
+    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
+    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'  };
   const ORG_CLIENTS = [
     ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],
     ['вдк','ВДК'],['профрент','Профрент'],['ситистрой','СитиСтрой'],['имплозия','Имплозия'],
@@ -292,8 +291,8 @@
       const n = parseInt(mm[1]);
       if (!ALL_MACHINES.has(String(n))) return n;
     }
-    return null;  }
-  function extractClient(text) {
+    return null;
+  }  function extractClient(text) {
     const tl = text.toLowerCase();
     if (/\bчл\b/.test(tl)) return 'Частное лицо';
     for (const [key, label] of ORG_CLIENTS) {
@@ -341,8 +340,8 @@
     if (dtype === 'dump') return 'Самосвал';
     return '';
   }
-  let rows = [];
-  let uid = 1;
+
+  let rows = [];  let uid = 1;
 
   function parsePaste() {
     const text = document.getElementById('chat-in').value.trim();
@@ -390,8 +389,8 @@
           if (machineType(driverMachine) === 'evak' && lineMachines.some(m => ['4850','4930','3977','6547','7368','2054'].includes(m))) {
             const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
             cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
-          }          newRows.push({
-            id: uid++, date, machine: MACHINE_LABELS[driverMachine] || driverMachine,
+          }
+          newRows.push({            id: uid++, date, machine: MACHINE_LABELS[driverMachine] || driverMachine,
             workType, address: addr, cargo: cargoFinal, client,
             hours: hours || '', trips: trips || '', pay: money || '',
           });
@@ -439,8 +438,8 @@
     rows = rows.filter(x=>x.id!==id);
     render();
   }
-  function renderTableOnly() {
-    const tbody = document.getElementById('tbody');
+
+  function renderTableOnly() {    const tbody = document.getElementById('tbody');
     if (!rows.length) {
       tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто</div></td></tr>';
       return;
@@ -488,8 +487,8 @@
   function saveSettings() {
     const s = { name: document.getElementById('drv-name').value, oklad: document.getElementById('drv-oklad').value, period: document.getElementById('drv-period').value };
     localStorage.setItem('tabel_settings', JSON.stringify(s));
-  }  function loadSettings() {
-    try {
+  }
+  function loadSettings() {    try {
       const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
       if (s.name) document.getElementById('drv-name').value = s.name;
       if (s.oklad) document.getElementById('drv-oklad').value = s.oklad;
@@ -537,27 +536,35 @@
   function clearAll() {
     if(!confirm('Очистить всё?')) return;
     rows = [];
-    document.getElementById('advance').value='';    document.getElementById('official').value='';
-    document.getElementById('fuel').value='';
+    document.getElementById('advance').value='';
+    document.getElementById('official').value='';    document.getElementById('fuel').value='';
     document.getElementById('chat-in').value='';
     render();
   }
 
-  // ========== PDF ГЕНЕРАЦИЯ С ТРАНСЛИТЕРАЦИЕЙ ==========
+  // ========== PDF ГЕНЕРАЦИЯ С КИРИЛЛИЦЕЙ ==========
   
-  // Функция для перевода кириллицы в латиницу (чтобы PDF не был пустым)
-  function transliterate(word) {
-    if (!word) return '';
-    const a = {"Ё":"YO","Й":"I","Ц":"TS","У":"U","К":"K","Е":"E","Н":"N","Г":"G","Ш":"SH","Щ":"SCH","З":"Z","Х":"H","Ъ":"'","ё":"yo","й":"i","ц":"ts","у":"u","к":"k","е":"e","н":"n","г":"g","ш":"sh","щ":"sch","з":"z","х":"h","ъ":"'","Ф":"F","Ы":"I","В":"V","А":"A","П":"P","Р":"R","О":"O","Л":"L","Д":"D","Ж":"ZH","Э":"E","ф":"f","ы":"i","в":"v","а":"a","п":"p","р":"r","о":"o","л":"l","д":"d","ж":"zh","э":"e","Я":"Ya","Ч":"CH","С":"S","М":"M","И":"I","Т":"T","Ь":"'","Б":"B","Ю":"YU","я":"ya","ч":"ch","с":"s","м":"m","и":"i","т":"t","ь":"'","б":"b","ю":"yu"};
-    return word.split('').map(function (char) { 
-      return a[char] || char; 
-    }).join("");
-  }
-
   async function generatePDFBlob() {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const { jsPDF } = window.jspdf;
-      const name = document.getElementById('drv-name').value.trim() || 'Voditel';
+      
+      // Загружаем шрифт Roboto с поддержкой кириллицы
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      
+      try {
+        // Используем метод добавления шрифта по URL (работает в новых версиях jsPDF)
+        await doc.addFontFromURL(
+          'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2', 
+          'Roboto', 
+          'normal'
+        );
+        doc.setFont('Roboto');
+      } catch (e) {
+        console.warn("Не удалось загрузить шрифт Roboto, используется стандартный (кириллица может не отображаться)", e);
+        doc.setFont('helvetica');
+      }
+
+      const name = document.getElementById('drv-name').value.trim() || 'Водитель';
       const period = document.getElementById('drv-period').value.trim() || '';
       const adv = parseFloat(document.getElementById('advance').value) || 0;
       const off = parseFloat(document.getElementById('official').value) || 0;
@@ -570,36 +577,34 @@
       const base = Math.max(tP, oklad);
       const rest = base - off - adv - fuel;
 
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      
       // Заголовки
       doc.setFontSize(16);
-      doc.setFont('helvetica','bold');
-      doc.text('TABEL: ' + transliterate(name), 14, 16);
+      doc.setFont('Roboto','bold');
+      doc.text('ТАБЕЛЬ: ' + name, 14, 16);
       
       doc.setFontSize(10);
-      doc.setFont('helvetica','normal');
+      doc.setFont('Roboto','normal');
       doc.setTextColor(120);
-      if (period) doc.text('Period: ' + transliterate(period), 14, 23);
+      if (period) doc.text('Период: ' + period, 14, 23);
+            doc.setTextColor(0);
       
-      doc.setTextColor(0);
-      
-      // Таблица (транслитерируем все ячейки)
-      const head = [['Data','Mashina','Tip raboty','Marshrut','Gruz','Zakazchik','Chasov','Reysov','Nachisleno RUB']];
-      const body = rows.map(r => [        r.date, 
-        transliterate(r.machine || '—'), 
-        transliterate(r.workType || '—'), 
-        transliterate((r.address||'—').substring(0,40)), 
-        transliterate((r.cargo||'—').substring(0,25)), 
-        transliterate((r.client||'—').substring(0,20)),
+      // Таблица
+      const head = [['Дата','Машина','Тип работы','Маршрут','Груз','Заказчик','Часов','Рейсов','Начислено']];
+      const body = rows.map(r => [
+        r.date, 
+        r.machine || '—', 
+        r.workType || '—', 
+        (r.address||'—').substring(0,40), 
+        (r.cargo||'—').substring(0,25), 
+        (r.client||'—').substring(0,20),
         r.hours || '—', 
         r.trips || '—', 
-        r.pay ? fmt(r.pay) : '—'
+        r.pay ? fmt(r.pay) + ' ₽' : '—'
       ]);
 
       doc.autoTable({
-        head, body, startY: period ? 28 : 22, styles: { fontSize: 8, cellPadding: 2 },
-        headStyles: { fillColor: [245, 166, 35], textColor: 0, fontStyle: 'bold' }, // Оранжевая шапка
+        head, body, startY: period ? 28 : 22, styles: { fontSize: 8, cellPadding: 2, font: 'Roboto' },
+        headStyles: { fillColor: [245, 166, 35], textColor: 0, fontStyle: 'bold', font: 'Roboto' }, // Оранжевая шапка
         alternateRowStyles: { fillColor: [245,245,245] },
         columnStyles: { 0: { cellWidth: 16 }, 1: { cellWidth: 24 }, 2: { cellWidth: 30 }, 3: { cellWidth: 55 }, 4: { cellWidth: 35 }, 5: { cellWidth: 28 }, 6: { cellWidth: 14 }, 7: { cellWidth: 14 }, 8: { cellWidth: 22, halign: 'right' } },
         margin: { left: 14, right: 14 }
@@ -607,18 +612,18 @@
 
       const finalY = doc.lastAutoTable.finalY + 8;
       doc.setFontSize(9);
-      doc.setFont('helvetica','bold');
+      doc.setFont('Roboto','bold');
       
       const sumLines = [
-        ['Vsego chasov:', String(tH)], 
-        ['Vsego reysov:', String(tT)], 
-        ['Nachisleno po tabelyu:', fmt(tP) + ' RUB'], 
-        ['Baza rascheta:', fmt(base) + ' RUB']
+        ['Всего часов:', String(tH)], 
+        ['Всего рейсов:', String(tT)], 
+        ['Начислено по табелю:', fmt(tP) + ' ₽'], 
+        ['База расчета:', fmt(base) + ' ₽']
       ];
-      if (off) sumLines.push(['Ofits. dokhod:', '-' + fmt(off) + ' RUB']);
-      if (adv) sumLines.push(['Avans:', '-' + fmt(adv) + ' RUB']);
-      if (fuel) sumLines.push(['Zapravki:', '-' + fmt(fuel) + ' RUB']);
-      sumLines.push(['NA RUKI:', fmt(rest) + ' RUB']);
+      if (off) sumLines.push(['Офиц. доход:', '-' + fmt(off) + ' ₽']);
+      if (adv) sumLines.push(['Аванс:', '-' + fmt(adv) + ' ₽']);
+      if (fuel) sumLines.push(['Заправки:', '-' + fmt(fuel) + ' ₽']);
+      sumLines.push(['НА РУКИ:', fmt(rest) + ' ₽']);
 
       let y = finalY;
       sumLines.forEach((sl, idx) => {
@@ -630,12 +635,12 @@
         y += 6;
       });
 
-      const pdfBlob = doc.output('blob');
-      resolve(pdfBlob);
+      const pdfBlob = doc.output('blob');      resolve(pdfBlob);
     });
   }
 
-  async function savePDF() {    try {
+  async function savePDF() {
+    try {
       const blob = await generatePDFBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -643,7 +648,7 @@
       a.download = `tabel_${Date.now()}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch(e) { alert('Ошибка при сохранении PDF'); }
+    } catch(e) { alert('Ошибка при сохранении PDF: ' + e.message); }
   }
 
   async function sharePDF() {
@@ -679,7 +684,6 @@
   window.upd = upd;
   window.del = del;
   loadSettings();
-  render();
-</script>
+  render();</script>
 </body>
 </html>
