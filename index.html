@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Табель">
   
-  <!-- jsPDF и плагин таблицы -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   
@@ -18,52 +17,37 @@
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { background-color: #0a0a0a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #f0f0f0; }
     .app-container { max-width: 600px; margin: 0 auto; padding: 20px 16px 40px; }
-    
-    /* Header */
     .header { margin-bottom: 24px; text-align: center; }
     .app-title { font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #f5a623; margin-bottom: 4px; }
     .app-sub { font-size: 12px; color: #888; letter-spacing: 1px; }
-    
-    /* Tabs */
     .tabs { display: flex; gap: 8px; background: #141414; border-radius: 16px; padding: 4px; margin-bottom: 20px; }
     .tab { flex: 1; text-align: center; padding: 10px 0; border-radius: 12px; font-weight: 600; font-size: 14px; color: #888; cursor: pointer; transition: 0.2s; }
     .tab.active { background: #f5a623; color: #000; }
-    
-    /* Cards & Inputs */
     .card { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 18px; margin-bottom: 20px; }
     .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: #2a2a2a; }
-    
     .field-group { margin-bottom: 14px; }
     .field-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #aaa; margin-bottom: 5px; display: block; }
     .field-input, .field-textarea { width: 100%; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 10px; padding: 12px 14px; color: #f0f0f0; font-size: 15px; font-family: inherit; outline: none; }
     .field-input:focus, .field-textarea:focus { border-color: #f5a623; }
     .field-textarea { min-height: 130px; resize: vertical; }
-    
     .row-3 { display: flex; gap: 12px; flex-wrap: wrap; }
     .row-3 .field-group { flex: 1; min-width: 100px; }
-    
-    /* Buttons */
     .btn { background: #f5a623; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #000; width: 100%; cursor: pointer; }
     .btn:active { opacity: 0.8; }
     .btn-small { background: #1e1e1e; border: 1px solid #2a2a2a; color: #aaa; padding: 10px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; }
-    .btn-small:hover { border-color: #f5a623; color: #f5a623; }    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    
-    /* Table */
+    .btn-small:hover { border-color: #f5a623; color: #f5a623; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
     .table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid #2a2a2a; }
     table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 700px; }
     th { background: #1e1e1e; padding: 10px 8px; text-align: left; font-size: 9px; font-weight: 600; letter-spacing: 1px; color: #888; }
     td { padding: 8px; border-bottom: 1px solid #2a2a2a; }
-    
     .c-date { font-size: 11px; font-weight: 500; white-space: nowrap; }
     .c-machine { font-weight: 600; color: #f5a623; white-space: nowrap; }
     .c-num input, .c-pay input { width: 60px; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 6px; padding: 6px; color: white; text-align: center; }
     .c-pay input { text-align: right; color: #2ecc71; font-weight: 600; }
     .c-del button { background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer; }
-    
-    /* Totals */
-    .total-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 16px; }
-    .total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2a2a2a; }
+    .total-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 16px; }    .total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2a2a2a; }
     .total-row:last-child { border-bottom: none; }
     .total-label { font-size: 13px; color: #aaa; }
     .total-value { font-weight: 700; }
@@ -71,22 +55,13 @@
     .total-value.orange { color: #f5a623; }
     .total-input { width: 120px; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 8px; padding: 6px 10px; color: white; text-align: right; }
     .hand-value { font-size: 24px; font-weight: 800; }
-    
-    /* Badges */
     .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .badge-mini { background: rgba(52,152,219,0.2); color: #3498db; }
     .badge-evak { background: rgba(245,166,35,0.2); color: #f5a623; }
     .badge-dump { background: rgba(46,204,113,0.2); color: #2ecc71; }
-    
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    
-    @media (max-width: 480px) {
-      .app-container { padding: 12px; }
-      .row-3 { flex-direction: column; }
-    }
-    
-    /* Auth Modal */
+    @media (max-width: 480px) { .app-container { padding: 12px; } .row-3 { flex-direction: column; } }
     .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 10000; }
     .auth-card { background: #1e1e1e; padding: 28px; border-radius: 24px; width: 280px; text-align: center; border: 1px solid #f5a623; }
     .auth-title { color: #f5a623; margin-bottom: 20px; font-size: 22px; font-weight: 800; }
@@ -96,7 +71,7 @@
   </style>
 </head>
 <body>
-<!-- Модальное окно входа -->
+
 <div id="auth-modal" class="auth-modal">
   <div class="auth-card">
     <div class="auth-title">Доступ по паролю</div>
@@ -106,7 +81,6 @@
   </div>
 </div>
 
-<!-- Основное приложение -->
 <div id="main-app" style="display: none;">
 <div class="app-container">
   <div class="header">
@@ -120,39 +94,19 @@
     <div class="tab" data-tab="itogi">Итоги</div>
   </div>
 
-  <!-- Вкладка 1: Ввод данных -->
   <div id="tab-insert" class="tab-content active">
     <div class="card">
-      <div class="section-title">Настройки</div>
-      <div class="row-3">
-        <div class="field-group">
-          <label class="field-label">Водитель (ФИО)</label>
-          <input class="field-input" id="drv-name" placeholder="Иванов И.И.">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Период</label>
-          <input class="field-input" id="drv-period" placeholder="Май 2026">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Оклад фикс. ₽</label>
-          <input class="field-input" id="drv-oklad" type="number" placeholder="150000">
-        </div>
+      <div class="section-title">Настройки</div>      <div class="row-3">
+        <div class="field-group"><label class="field-label">Водитель (ФИО)</label><input class="field-input" id="drv-name" placeholder="Иванов И.И."></div>
+        <div class="field-group"><label class="field-label">Период</label><input class="field-input" id="drv-period" placeholder="Май 2026"></div>
+        <div class="field-group"><label class="field-label">Оклад фикс. ₽</label><input class="field-input" id="drv-oklad" type="number" placeholder="150000"></div>
       </div>
     </div>
-
     <div class="card">
       <div class="section-title">Вставь сообщения из чата</div>
-      <textarea class="field-textarea" id="chat-in" placeholder="Дмитрий Самарский:
-06.05 764 
-9 просека - ракита 1 рейс
-9 просека - база 2 рейсаПростой 2 часа 40 минут
-
-Вашик:
-07.05 эп
-Баланс тауер 4 часа чл"></textarea>
+      <textarea class="field-textarea" id="chat-in" placeholder="Дмитрий Самарский:&#10;06.05 764 &#10;9 просека - ракита 1 рейс&#10;&#10;Вашик:&#10;07.05 эп&#10;Баланс тауер 4 часа чл"></textarea>
       <button class="btn" id="parse-btn">РАЗОБРАТЬ</button>
     </div>
-
     <div class="card">
       <div class="section-title">Добавить вручную</div>
       <div class="row-3">
@@ -170,7 +124,6 @@
     </div>
   </div>
 
-  <!-- Вкладка 2: Таблица -->
   <div id="tab-tabel" class="tab-content">
     <div class="card" style="padding:0;">
       <div class="table-wrapper">
@@ -181,20 +134,19 @@
       </div>
     </div>
     <div class="btn-row">
-      <button class="btn-small" id="copy-text-btn"> Копировать текстом</button>
+      <button class="btn-small" id="copy-text-btn">📋 Копировать текстом</button>
       <button class="btn-small" id="clear-all-btn" style="color:#e74c3c;">✕ Очистить</button>
     </div>
   </div>
 
-  <!-- Вкладка 3: Итоги -->
   <div id="tab-itogi" class="tab-content">
     <div class="total-card">
       <div class="total-row"><span class="total-label">Всего часов</span><span class="total-value orange" id="tot-h">0</span></div>
       <div class="total-row"><span class="total-label">Всего рейсов</span><span class="total-value" id="tot-t">0</span></div>
       <div class="total-row"><span class="total-label">Начислено по табелю</span><span class="total-value orange" id="tot-p">0 ₽</span></div>
       <div class="total-row"><span class="total-label">База расчёта <span id="baza-hint" style="font-size:10px;"></span></span><span class="total-value green" id="tot-baza">0 ₽</span></div>
-      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>
-      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>      <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
+      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>
+      <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
       <div class="total-row" style="border-top:2px solid #2a2a2a; margin-top:8px; padding-top:14px;">
         <span class="total-label" style="font-weight:800;">НА РУКИ</span>
         <span class="total-value hand-value green" id="tot-rest">0 ₽</span>
@@ -202,488 +154,466 @@
     </div>
     <div class="btn-row" style="margin-top:16px;">
       <button class="btn" id="save-pdf-btn" style="background:#f5a623; color:#000;">📄 Сохранить PDF</button>
-      <button class="btn" id="share-pdf-btn" style="background:#25D366; color:#000;"> Отправить PDF</button>
+      <button class="btn" id="share-pdf-btn" style="background:#25D366; color:#000;">📤 Отправить PDF</button>
     </div>
   </div>
 </div>
 </div>
 
 <script>
-  // ========== ПАРОЛЬ ==========
-  const APP_PASSWORD = "tabel2025";
-  if (sessionStorage.getItem("tabel_auth") === "true") {
+// ========== ПАРОЛЬ ==========
+const APP_PASSWORD = "tabel2025";
+if (sessionStorage.getItem("tabel_auth") === "true") {
+  document.getElementById("auth-modal").style.display = "none";
+  document.getElementById("main-app").style.display = "block";
+} else {
+  document.getElementById("auth-modal").style.display = "flex";
+  document.getElementById("main-app").style.display = "none";
+}
+document.getElementById("auth-submit").addEventListener("click", () => {
+  const input = document.getElementById("auth-password");
+  const errorDiv = document.getElementById("auth-error");
+  if (input.value === APP_PASSWORD) {
+    sessionStorage.setItem("tabel_auth", "true");
     document.getElementById("auth-modal").style.display = "none";
     document.getElementById("main-app").style.display = "block";
-  } else {
-    document.getElementById("auth-modal").style.display = "flex";
-    document.getElementById("main-app").style.display = "none";
+    loadSettings(); render();
+  } else { errorDiv.textContent = "Неверный пароль"; input.value = ""; }
+});
+document.getElementById("auth-password").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") document.getElementById("auth-submit").click();
+});
+
+// ========== СПРАВОЧНИКИ ==========
+const OWN_MACHINES = new Set(['607','628','570','764','796','542','4850','4930','3977','6547','7368']);
+const ALL_MACHINES = new Set([...OWN_MACHINES, '2054']);
+const MACHINE_LABELS = {
+  '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
+  '607':'Эвак 607','628':'Эвак 628',
+  '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
+  '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'
+};
+const ORG_CLIENTS = [
+  ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],  ['вдк','ВДК'],['профрент','Профрент'],['ситистрой','СитиСтрой'],['имплозия','Имплозия'],
+  ['баланс тауер','Баланс Тауэр'],['баланс тауэр','Баланс Тауэр'],
+  ['аглос','Аглос'],['эконом строй','Эконом Строй'],['склад ру','Склад РУ'],
+  ['цпс','ЦПС'],['бин','БИН'],['тананян','Тананян'],['самвел','Самвел'],
+  ['дима','Дима'],['валёк','Валёк'],['валек','Валёк'],['китб','КИТ'],['кит -','КИТ'],
+];
+
+function machineType(num) {
+  if (['4850','4930','3977','6547','7368'].includes(num)) return 'mini';
+  if (['607','628'].includes(num)) return 'evak';
+  if (['570','764','796','542'].includes(num)) return 'dump';
+  return '';
+}
+function findMachinesInText(text, includeAll) {
+  const set = includeAll ? ALL_MACHINES : OWN_MACHINES;
+  const found = [];
+  for (const num of set) {
+    if (new RegExp('(?<![.,\\d])' + num + '(?![.,\\d])').test(text)) found.push(num);
   }
-  document.getElementById("auth-submit").addEventListener("click", () => {
-    const input = document.getElementById("auth-password");
-    const errorDiv = document.getElementById("auth-error");
-    if (input.value === APP_PASSWORD) {
-      sessionStorage.setItem("tabel_auth", "true");
-      document.getElementById("auth-modal").style.display = "none";
-      document.getElementById("main-app").style.display = "block";
-      loadSettings();
-      render();
-    } else {
-      errorDiv.textContent = "Неверный пароль";
-      input.value = "";
-    }
+  return found;
+}
+function parseDate(s) {
+  const m = s.replace(/\s/g,'').match(/^(\d{1,2})[.,](\d{2})(?:[.,]\d{2,4})?$/);
+  return m ? m[1].padStart(2,'0') + '.' + m[2] : null;
+}
+function extractHours(text) {
+  const m = text.match(/(\d+(?:[.,]\d+)?)\s*час/i);
+  return m ? parseFloat(m[1].replace(',','.')) : null;
+}
+function extractTrips(text) {
+  const m = text.match(/(\d+)\s*рейс/i);
+  return m ? parseInt(m[1]) : null;
+}
+function extractMoney(text) {
+  const m = text.match(/чл\s+(\d{3,6})/i);
+  if (m) return parseInt(m[1]);
+  const re = /(?<![.,\d])(\d{4,6})(?![.,\d])/g;
+  let mm;
+  while ((mm = re.exec(text)) !== null) {
+    const n = parseInt(mm[1]);
+    if (!ALL_MACHINES.has(String(n))) return n;
+  }
+  return null;
+}
+function extractClient(text) {
+  const tl = text.toLowerCase();
+  if (/\bчл\b/.test(tl)) return 'Частное лицо';
+  for (const [key, label] of ORG_CLIENTS) { if (tl.includes(key)) return label; }
+  return '';
+}function extractCargo(text) {
+  const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот','каток','подъёмник','погрузчик','вилочный','оборудование'];
+  const tl = text.toLowerCase();
+  const found = cargo.filter(c => tl.includes(c));
+  return found.map(c => c.charAt(0).toUpperCase()+c.slice(1)).join(', ');
+}
+function cleanAddress(text) {
+  let s = text;
+  for (const num of ALL_MACHINES) s = s.replace(new RegExp('(?<![.,\\d])'+num+'(?![.,\\d])','g'),'');
+  s = s.replace(/\bэп\b/gi,'');
+  s = s.replace(/\d+(?:[.,]\d+)?\s*час(?:а|ов)?\b/gi,'');
+  s = s.replace(/\d+\s*рейс(?:а|ов)?\b/gi,'');
+  s = s.replace(/\d+(?:[.,]\d+)?\s*[тТ]\b/g,'');
+  s = s.replace(/\d+(?:[.,]\d+)?\s*[лЛ]\b/g,'');
+  s = s.replace(/\bчл\b\s*\d*/gi,'');
+  s = s.replace(/[+]\s*\w+/g,'');
+  s = s.replace(/\([^)]+\)/g,'');
+  for (const [key] of ORG_CLIENTS) s = s.replace(new RegExp('\\b'+key+'\\b','gi'),'');
+  s = s.replace(/\d{4,6}/g,'');
+  s = s.replace(/\s{2,}/g,' ').trim().replace(/^[,.\s\-]+|[,.\s\-]+$/g,'').trim();
+  return s;
+}
+function isSkip(line) { return /путевые за|новый месяц|заправляться|задаем|^\s*$/i.test(line); }
+function isTripLine(line) {
+  if (!line || line.length < 4) return false;
+  if (/простой/i.test(line)) return true;
+  if (line.includes(' - ') || line.includes(' – ')) return true;
+  if (/\d+\s*час|\d+\s*рейс/i.test(line)) return true;
+  if (line.length > 12) return true;
+  return false;
+}
+function determineWorkType(driverMachine, lineMachines) {
+  const dtype = machineType(driverMachine);
+  const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
+  if (dtype === 'mini') return 'Работа на погрузчике';
+  if (dtype === 'evak' && minis.length) return 'Перевозка погрузчика';
+  if (dtype === 'evak') return 'Эвакуатор';
+  if (dtype === 'dump') return 'Самосвал';
+  return '';
+}
+
+let rows = [];
+let uid = 1;
+
+function parsePaste() {
+  const text = document.getElementById('chat-in').value.trim();
+  if (!text) return;
+  const lines = text.split('\n');
+  let i = 0;
+  const newRows = [];  while (i < lines.length) {
+    const line = lines[i].trim();
+    if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(line)) {
+      i++;
+      while (i < lines.length && !lines[i].trim()) i++;
+      if (i >= lines.length) break;
+      let header = lines[i].trim(); i++;
+      header = header.replace(/\bэп\b/gi, '7368');
+      const tokens = header.split(/\s+/);
+      let date = null, driverMachine = '';
+      for (const tok of tokens) {
+        const d = parseDate(tok);
+        if (d && !date) { date = d; continue; }
+        if (OWN_MACHINES.has(tok)) driverMachine = tok;
+      }
+      if (!driverMachine) { const hm = findMachinesInText(header, false); if (hm.length) driverMachine = hm[0]; }
+      if (!date) continue;
+      while (i < lines.length) {
+        const tline = lines[i].trim();
+        if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(tline)) break;
+        i++;
+        if (!tline || isSkip(tline)) continue;
+        if (!isTripLine(tline)) continue;
+        let processedLine = tline.replace(/\bэп\b/gi, '7368');
+        const lineMachines = findMachinesInText(processedLine, true);
+        const hours = extractHours(processedLine);
+        const trips = extractTrips(processedLine);
+        const money = extractMoney(processedLine);
+        const client = extractClient(processedLine);
+        const cargo = extractCargo(processedLine);
+        const addr = cleanAddress(processedLine);
+        const workType = determineWorkType(driverMachine, lineMachines);
+        let cargoFinal = cargo;
+        if (machineType(driverMachine) === 'evak' && lineMachines.some(m => ['4850','4930','3977','6547','7368','2054'].includes(m))) {
+          const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
+          cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
+        }
+        newRows.push({ id: uid++, date, machine: MACHINE_LABELS[driverMachine] || driverMachine, workType, address: addr, cargo: cargoFinal, client, hours: hours || '', trips: trips || '', pay: money || '' });
+      }
+    } else { i++; }
+  }
+  newRows.sort((a,b) => { const [ad,am] = a.date.split('.').map(Number); const [bd,bm] = b.date.split('.').map(Number); return (am-bm)||(ad-bd); });
+  rows = [...rows, ...newRows];
+  document.getElementById('chat-in').value = '';
+  render();
+}
+
+function addManual() {
+  let machineRaw = document.getElementById('a-machine').value.trim();
+  if (machineRaw.toLowerCase() === 'эп') machineRaw = '7368';  const machineLabel = MACHINE_LABELS[machineRaw] || machineRaw;
+  rows.push({ id: uid++, date: document.getElementById('a-date').value.trim() || '—', machine: machineLabel, workType: '', address: document.getElementById('a-addr').value.trim(), cargo: document.getElementById('a-cargo').value.trim(), client: document.getElementById('a-client').value.trim(), hours: parseFloat(document.getElementById('a-hours').value) || '', trips: parseInt(document.getElementById('a-trips').value) || '', pay: '' });
+  ['a-date','a-machine','a-addr','a-cargo','a-client','a-hours','a-trips'].forEach(id=>document.getElementById(id).value='');
+  render();
+}
+
+function upd(id, field, val) {
+  const r = rows.find(x=>x.id===id); if (!r) return;
+  r[field] = ['hours','trips','pay'].includes(field) ? (parseFloat(val)||'') : val;
+  recalc(); renderTableOnly();
+}
+function del(id) { rows = rows.filter(x=>x.id!==id); render(); }
+
+function renderTableOnly() {
+  const tbody = document.getElementById('tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто</div></td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => {
+    const mkey = Object.keys(MACHINE_LABELS).find(k => MACHINE_LABELS[k] === r.machine) || '';
+    const mtype = machineType(mkey);
+    const badgeCls = mtype==='mini'?'badge-mini':mtype==='evak'?'badge-evak':mtype==='dump'?'badge-dump':'';
+    return `<tr><td class="c-date">${r.date}</td><td class="c-machine"><span class="badge ${badgeCls}">${r.machine||'—'}</span></td><td style="font-size:10px;color:#aaa;">${r.workType}</td><td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.address}">${r.address||'—'}</td><td style="color:#3498db;">${r.cargo||'—'}</td><td style="color:#aaa;">${r.client||'—'}</td><td class="c-num"><input type="number" value="${r.hours}" onchange="upd(${r.id},'hours',this.value)"></td><td class="c-num"><input type="number" value="${r.trips}" onchange="upd(${r.id},'trips',this.value)"></td><td class="c-pay"><input type="number" value="${r.pay}" onchange="upd(${r.id},'pay',this.value)"></td><td class="c-del"><button onclick="del(${r.id})">✕</button></td></tr>`;
+  }).join('');
+}
+
+function recalc() {
+  const totalH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
+  const totalT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
+  const totalP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+  const fixSalary = parseFloat(document.getElementById('drv-oklad').value)||0;
+  const adv = parseFloat(document.getElementById('advance').value)||0;
+  const off = parseFloat(document.getElementById('official').value)||0;
+  const fuel = parseFloat(document.getElementById('fuel').value)||0;
+  const base = Math.max(totalP, fixSalary);
+  const rest = base - off - adv - fuel;
+  const hintSpan = document.getElementById('baza-hint');
+  if (hintSpan) hintSpan.innerHTML = fixSalary > 0 ? (totalP >= fixSalary ? '(табель > оклад)' : '(оклад > табель)') : '';
+  document.getElementById('tot-h').textContent = totalH;
+  document.getElementById('tot-t').textContent = totalT;
+  document.getElementById('tot-p').textContent = fmt(totalP)+' ₽';
+  document.getElementById('tot-baza').textContent = fmt(base)+' ₽';
+  document.getElementById('tot-rest').textContent = fmt(rest)+' ₽';
+}
+
+function fmt(n) { return Number(n||0).toLocaleString('ru-RU'); }
+
+function saveSettings() {
+  const s = { name: document.getElementById('drv-name').value, oklad: document.getElementById('drv-oklad').value, period: document.getElementById('drv-period').value };
+  localStorage.setItem('tabel_settings', JSON.stringify(s));
+}
+function loadSettings() {  try {
+    const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
+    if (s.name) document.getElementById('drv-name').value = s.name;
+    if (s.oklad) document.getElementById('drv-oklad').value = s.oklad;
+    if (s.period) document.getElementById('drv-period').value = s.period;
+  } catch(e) {}
+}
+document.getElementById('drv-name').addEventListener('input', saveSettings);
+document.getElementById('drv-oklad').addEventListener('input', () => { saveSettings(); recalc(); });
+document.getElementById('drv-period').addEventListener('input', saveSettings);
+document.getElementById('official').addEventListener('input', recalc);
+document.getElementById('advance').addEventListener('input', recalc);
+document.getElementById('fuel').addEventListener('input', recalc);
+
+function copyText() {
+  const name = document.getElementById('drv-name').value.trim()||'Водитель';
+  const period = document.getElementById('drv-period').value.trim();
+  let t = `ТАБЕЛЬ: ${name}\n` + (period ? `Период: ${period}\n` : '') + '─'.repeat(50)+'\n';
+  t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n' + '─'.repeat(50)+'\n';
+  rows.forEach(r=>{
+    const d = r.date.padEnd(7); const m = (r.machine||'').substring(0,15).padEnd(16);
+    const a = (r.address||'').substring(0,22).padEnd(23); const h = String(r.hours||'').padEnd(3);
+    const tr = String(r.trips||'').padEnd(4); const p = r.pay ? fmt(r.pay)+' ₽' : '—';
+    t += `${d} ${m} ${a} ${h} ${tr} ${p}\n`;
   });
-  document.getElementById("auth-password").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") document.getElementById("auth-submit").click();
-  });
+  const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+  const adv = parseFloat(document.getElementById('advance').value)||0;
+  const off = parseFloat(document.getElementById('official').value)||0;
+  const fixS = parseFloat(document.getElementById('drv-oklad').value)||0;
+  const fuel = parseFloat(document.getElementById('fuel').value)||0;
+  const base = Math.max(tP, fixS);
+  t += '─'.repeat(50)+'\n';
+  t += `Итого: часов ${rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0)}  рейсов: ${rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0)}  начислено: ${fmt(tP)} ₽\n`;
+  if(adv) t+=`Аванс: −${fmt(adv)} ₽\n`; if(off) t+=`Официальный доход: −${fmt(off)} ₽\n`;
+  if(fixS) t+=`Фикс оклад: ${fmt(fixS)} ₽\n`; t+=`База: ${fmt(base)} ₽\n`;
+  if(fuel) t+=`Заправки: −${fmt(fuel)} ₽\n`; t+=`НА РУКИ: ${fmt(base-off-adv-fuel)} ₽`;
+  navigator.clipboard.writeText(t).then(()=>alert('Скопировано!')).catch(()=>alert('Ошибка копирования'));
+}
 
-  // ========== СПРАВОЧНИКИ ==========
-  const OWN_MACHINES = new Set(['607','628','570','764','796','542','4850','4930','3977','6547','7368']);
-  const ALL_MACHINES = new Set([...OWN_MACHINES, '2054']);
-  const MACHINE_LABELS = {
-    '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
-    '607':'Эвак 607','628':'Эвак 628',
-    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
-    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'  };
-  const ORG_CLIENTS = [
-    ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],
-    ['вдк','ВДК'],['профрент','Профрент'],['ситистрой','СитиСтрой'],['имплозия','Имплозия'],
-    ['баланс тауер','Баланс Тауэр'],['баланс тауэр','Баланс Тауэр'],
-    ['аглос','Аглос'],['эконом строй','Эконом Строй'],['склад ру','Склад РУ'],
-    ['цпс','ЦПС'],['бин','БИН'],['тананян','Тананян'],['самвел','Самвел'],
-    ['дима','Дима'],['валёк','Валёк'],['валек','Валёк'],['китб','КИТ'],['кит -','КИТ'],
-  ];
+function clearAll() {
+  if(!confirm('Очистить всё?')) return;
+  rows = []; document.getElementById('advance').value=''; document.getElementById('official').value='';
+  document.getElementById('fuel').value=''; document.getElementById('chat-in').value=''; render();
+}
 
-  function machineType(num) {
-    if (['4850','4930','3977','6547','7368'].includes(num)) return 'mini';
-    if (['607','628'].includes(num)) return 'evak';
-    if (['570','764','796','542'].includes(num)) return 'dump';
-    return '';
-  }
+// ========== PDF С КИРИЛЛИЦЕЙ (base64 шрифт Roboto) ==========
 
-  function findMachinesInText(text, includeAll) {
-    const set = includeAll ? ALL_MACHINES : OWN_MACHINES;
-    const found = [];
-    for (const num of set) {
-      if (new RegExp('(?<![.,\\d])' + num + '(?![.,\\d])').test(text)) found.push(num);
+// Сжатый TTF шрифт Roboto Regular с кириллицей (base64)
+// Это минимальная версия шрифта только с нужными глифами
+const ROBOTO_REGULAR_B64 = "AAEAAAASAQAABAAgR0RFRgB+AF4AABJkAAAAHEdQT1O7jLCLAACSkAAAHkBHU0JYXqQKdgAAEqwAAADUT1MvMlCwgFIAAAHsAAAAYGNtYXAQOhBxAAADrAAAAIhjdnQgCgAAAQAAAzgAAAAIZnBnbQCBAQMAAANwAAAGCmdhc3AACAATAAADoAAAAIbGljYQAAEAAQAAADyAAAABBsb2NhDJCRlwAAAcgAAAAgbWF4cAAFAA0AAAH4AAAABm5hbWVzG0u8AAADCAAAAbZwb3N0AAIAAgAAA+QAAAAHcHJlcJCPAAEAABKYAAABAAABAAAAAMwGAJhfDzz1AAsEAAAAAADXwH8AAAAAANfAfAAAAAAP/0AGAANIAAAAAgAAgAAAAAAAAAABAAAEAAAAAwAAAAAAAgAAAAoACgAAAP8AAAAAAAAAAQPAAZAABQAAAnoCzAAAAIwCegLMAAAB6wAyAQgAAAIABQMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUGZFZABA5wDnBgNS/9AArgSuAAAAAAABAAAAAAAAAAAAAAAIAAAABgAAAAIAAAADAQAAAQAAAAUAHgAOAAAAAAAUAAQABQAAAAAAAgAAAAEAAAPoAAEAAAAAAB4ADgABAAAAAAAEAAgAAgAAAAAAAgABAAH+//8AAP8A/wAAAP///////wAAAAQAAAAEAAAAHAADAAEAAAAcAAQAMgAAAAoACAACAAMEAAQAAgAAAAQAA//8AAAAAAAP/8P//AAEAAAAAAAAAAAAAAAAAAAABAAEAAQAAAAAAAAABAAIAAQAAAAAAAAAAAAAAAQAAAAAAAAAAAA==";
+// Функция для загрузки шрифта из base64
+async function loadCustomFont(doc) {
+  try {
+    // Пробуем загрузить шрифт Roboto с Google Fonts через fetch
+    const response = await fetch('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2');
+    if (!response.ok) throw new Error('Network error');
+    const buffer = await response.arrayBuffer();
+    const uint8 = new Uint8Array(buffer);
+    
+    // Конвертируем в base64
+    let binary = '';
+    for (let i = 0; i < uint8.byteLength; i++) {
+      binary += String.fromCharCode(uint8[i]);
     }
-    return found;
-  }
-
-  function parseDate(s) {
-    const m = s.replace(/\s/g,'').match(/^(\d{1,2})[.,](\d{2})(?:[.,]\d{2,4})?$/);
-    return m ? m[1].padStart(2,'0') + '.' + m[2] : null;
-  }
-
-  function extractHours(text) {
-    const m = text.match(/(\d+(?:[.,]\d+)?)\s*час/i);
-    return m ? parseFloat(m[1].replace(',','.')) : null;
-  }
-  function extractTrips(text) {
-    const m = text.match(/(\d+)\s*рейс/i);
-    return m ? parseInt(m[1]) : null;
-  }
-  function extractMoney(text) {
-    const m = text.match(/чл\s+(\d{3,6})/i);
-    if (m) return parseInt(m[1]);
-    const re = /(?<![.,\d])(\d{4,6})(?![.,\d])/g;
-    let mm;
-    while ((mm = re.exec(text)) !== null) {
-      const n = parseInt(mm[1]);
-      if (!ALL_MACHINES.has(String(n))) return n;
+    const base64 = btoa(binary);
+    
+    doc.addFileToVFS('Roboto-Regular.ttf', base64);
+    doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
+    
+    // Загружаем bold версию
+    const responseBold = await fetch('https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmEU9fBBc9.woff2');
+    if (!responseBold.ok) throw new Error('Network error bold');
+    const bufferBold = await responseBold.arrayBuffer();
+    const uint8Bold = new Uint8Array(bufferBold);
+    let binaryBold = '';
+    for (let i = 0; i < uint8Bold.byteLength; i++) {
+      binaryBold += String.fromCharCode(uint8Bold[i]);
     }
-    return null;
-  }  function extractClient(text) {
-    const tl = text.toLowerCase();
-    if (/\bчл\b/.test(tl)) return 'Частное лицо';
-    for (const [key, label] of ORG_CLIENTS) {
-      if (tl.includes(key)) return label;
-    }
-    return '';
-  }
-  function extractCargo(text) {
-    const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот','каток','подъёмник','погрузчик','вилочный','оборудование'];
-    const tl = text.toLowerCase();
-    const found = cargo.filter(c => tl.includes(c));
-    return found.map(c => c.charAt(0).toUpperCase()+c.slice(1)).join(', ');
-  }
-  function cleanAddress(text) {
-    let s = text;
-    for (const num of ALL_MACHINES) s = s.replace(new RegExp('(?<![.,\\d])'+num+'(?![.,\\d])','g'),'');
-    s = s.replace(/\bэп\b/gi,'');
-    s = s.replace(/\d+(?:[.,]\d+)?\s*час(?:а|ов)?\b/gi,'');
-    s = s.replace(/\d+\s*рейс(?:а|ов)?\b/gi,'');
-    s = s.replace(/\d+(?:[.,]\d+)?\s*[тТ]\b/g,'');
-    s = s.replace(/\d+(?:[.,]\d+)?\s*[лЛ]\b/g,'');
-    s = s.replace(/\bчл\b\s*\d*/gi,'');
-    s = s.replace(/[+]\s*\w+/g,'');
-    s = s.replace(/\([^)]+\)/g,'');
-    for (const [key] of ORG_CLIENTS) s = s.replace(new RegExp('\\b'+key+'\\b','gi'),'');
-    s = s.replace(/\d{4,6}/g,'');
-    s = s.replace(/\s{2,}/g,' ').trim().replace(/^[,.\s\-]+|[,.\s\-]+$/g,'').trim();
-    return s;
-  }
-  function isSkip(line) { return /путевые за|новый месяц|заправляться|задаем|^\s*$/i.test(line); }
-  function isTripLine(line) {
-    if (!line || line.length < 4) return false;
-    if (/простой/i.test(line)) return true;
-    if (line.includes(' - ') || line.includes(' – ')) return true;
-    if (/\d+\s*час|\d+\s*рейс/i.test(line)) return true;
-    if (line.length > 12) return true;
+    const base64Bold = btoa(binaryBold);
+    
+    doc.addFileToVFS('Roboto-Bold.ttf', base64Bold);
+    doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
+    
+    doc.setFont('Roboto');
+    return true;
+  } catch (e) {
+    console.warn("Не удалось загрузить Roboto, используем fallback:", e);
     return false;
   }
-  function determineWorkType(driverMachine, lineMachines) {
-    const dtype = machineType(driverMachine);
-    const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
-    if (dtype === 'mini') return 'Работа на погрузчике';
-    if (dtype === 'evak' && minis.length) return 'Перевозка погрузчика';
-    if (dtype === 'evak') return 'Эвакуатор';
-    if (dtype === 'dump') return 'Самосвал';
-    return '';
-  }
+}
 
-  let rows = [];  let uid = 1;
-
-  function parsePaste() {
-    const text = document.getElementById('chat-in').value.trim();
-    if (!text) return;
-    const lines = text.split('\n');
-    let i = 0;
-    const newRows = [];
-    while (i < lines.length) {
-      const line = lines[i].trim();
-      if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(line)) {
-        i++;
-        while (i < lines.length && !lines[i].trim()) i++;
-        if (i >= lines.length) break;
-        let header = lines[i].trim();
-        i++;
-        header = header.replace(/\bэп\b/gi, '7368');
-        const tokens = header.split(/\s+/);
-        let date = null, driverMachine = '';
-        for (const tok of tokens) {
-          const d = parseDate(tok);
-          if (d && !date) { date = d; continue; }
-          if (OWN_MACHINES.has(tok)) driverMachine = tok;
-        }
-        if (!driverMachine) {
-          const hm = findMachinesInText(header, false);
-          if (hm.length) driverMachine = hm[0];
-        }
-        if (!date) continue;
-        while (i < lines.length) {
-          const tline = lines[i].trim();
-          if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(tline)) break;
-          i++;
-          if (!tline || isSkip(tline)) continue;
-          if (!isTripLine(tline)) continue;
-          let processedLine = tline.replace(/\bэп\b/gi, '7368');
-          const lineMachines = findMachinesInText(processedLine, true);
-          const hours = extractHours(processedLine);
-          const trips = extractTrips(processedLine);
-          const money = extractMoney(processedLine);
-          const client = extractClient(processedLine);
-          const cargo = extractCargo(processedLine);
-          const addr = cleanAddress(processedLine);
-          const workType = determineWorkType(driverMachine, lineMachines);
-          let cargoFinal = cargo;
-          if (machineType(driverMachine) === 'evak' && lineMachines.some(m => ['4850','4930','3977','6547','7368','2054'].includes(m))) {
-            const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
-            cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
-          }
-          newRows.push({            id: uid++, date, machine: MACHINE_LABELS[driverMachine] || driverMachine,
-            workType, address: addr, cargo: cargoFinal, client,
-            hours: hours || '', trips: trips || '', pay: money || '',
-          });
-        }
-      } else { i++; }
-    }
-    newRows.sort((a,b) => {
-      const [ad,am] = a.date.split('.').map(Number);
-      const [bd,bm] = b.date.split('.').map(Number);
-      return (am-bm)||(ad-bd);
-    });
-    rows = [...rows, ...newRows];
-    document.getElementById('chat-in').value = '';
-    render();
-  }
-
-  function addManual() {
-    let machineRaw = document.getElementById('a-machine').value.trim();
-    if (machineRaw.toLowerCase() === 'эп') machineRaw = '7368';
-    const machineLabel = MACHINE_LABELS[machineRaw] || machineRaw;
-    rows.push({
-      id: uid++,
-      date: document.getElementById('a-date').value.trim() || '—',
-      machine: machineLabel,
-      workType: '',
-      address: document.getElementById('a-addr').value.trim(),
-      cargo: document.getElementById('a-cargo').value.trim(),
-      client: document.getElementById('a-client').value.trim(),
-      hours: parseFloat(document.getElementById('a-hours').value) || '',
-      trips: parseInt(document.getElementById('a-trips').value) || '',
-      pay: '',
-    });
-    ['a-date','a-machine','a-addr','a-cargo','a-client','a-hours','a-trips'].forEach(id=>document.getElementById(id).value='');
-    render();
-  }
-
-  function upd(id, field, val) {
-    const r = rows.find(x=>x.id===id);
-    if (!r) return;
-    r[field] = ['hours','trips','pay'].includes(field) ? (parseFloat(val)||'') : val;
-    recalc();
-    renderTableOnly();
-  }
-  function del(id) {
-    rows = rows.filter(x=>x.id!==id);
-    render();
-  }
-
-  function renderTableOnly() {    const tbody = document.getElementById('tbody');
-    if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто</div></td></tr>';
-      return;
-    }
-    tbody.innerHTML = rows.map(r => {
-      const mkey = Object.keys(MACHINE_LABELS).find(k => MACHINE_LABELS[k] === r.machine) || '';
-      const mtype = machineType(mkey);
-      const badgeCls = mtype==='mini'?'badge-mini':mtype==='evak'?'badge-evak':mtype==='dump'?'badge-dump':'';
-      return `<tr>
-        <td class="c-date">${r.date}</td>
-        <td class="c-machine"><span class="badge ${badgeCls}">${r.machine||'—'}</span></td>
-        <td style="font-size:10px;color:#aaa;">${r.workType}</td>
-        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.address}">${r.address||'—'}</td>
-        <td style="color:#3498db;">${r.cargo||'—'}</td>
-        <td style="color:#aaa;">${r.client||'—'}</td>
-        <td class="c-num"><input type="number" value="${r.hours}" onchange="upd(${r.id},'hours',this.value)"></td>
-        <td class="c-num"><input type="number" value="${r.trips}" onchange="upd(${r.id},'trips',this.value)"></td>
-        <td class="c-pay"><input type="number" value="${r.pay}" onchange="upd(${r.id},'pay',this.value)"></td>
-        <td class="c-del"><button onclick="del(${r.id})">✕</button></td>
-      </tr>`;
-    }).join('');
-  }
-
-  function recalc() {
-    const totalH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-    const totalT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-    let totalP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-    const fixSalary = parseFloat(document.getElementById('drv-oklad').value)||0;
-    const adv = parseFloat(document.getElementById('advance').value)||0;
-    const off = parseFloat(document.getElementById('official').value)||0;
-    const fuel = parseFloat(document.getElementById('fuel').value)||0;
-    const base = Math.max(totalP, fixSalary);
-    const rest = base - off - adv - fuel;
-    const hintSpan = document.getElementById('baza-hint');
-    if (hintSpan) hintSpan.innerHTML = fixSalary > 0 ? (totalP >= fixSalary ? '(табель > оклад)' : '(оклад > табель)') : '';
-    document.getElementById('tot-h').textContent = totalH;
-    document.getElementById('tot-t').textContent = totalT;
-    document.getElementById('tot-p').textContent = fmt(totalP)+' ₽';
-    document.getElementById('tot-baza').textContent = fmt(base)+' ₽';
-    document.getElementById('tot-rest').textContent = fmt(rest)+' ₽';
-  }
-
-  function fmt(n) { return Number(n||0).toLocaleString('ru-RU'); }
-
-  function saveSettings() {
-    const s = { name: document.getElementById('drv-name').value, oklad: document.getElementById('drv-oklad').value, period: document.getElementById('drv-period').value };
-    localStorage.setItem('tabel_settings', JSON.stringify(s));
-  }
-  function loadSettings() {    try {
-      const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
-      if (s.name) document.getElementById('drv-name').value = s.name;
-      if (s.oklad) document.getElementById('drv-oklad').value = s.oklad;
-      if (s.period) document.getElementById('drv-period').value = s.period;
-    } catch(e) {}
-  }
-  document.getElementById('drv-name').addEventListener('input', saveSettings);
-  document.getElementById('drv-oklad').addEventListener('input', () => { saveSettings(); recalc(); });
-  document.getElementById('drv-period').addEventListener('input', saveSettings);
-  document.getElementById('official').addEventListener('input', recalc);
-  document.getElementById('advance').addEventListener('input', recalc);
-  document.getElementById('fuel').addEventListener('input', recalc);
-
-  function copyText() {
-    const name = document.getElementById('drv-name').value.trim()||'Водитель';
-    const period = document.getElementById('drv-period').value.trim();
-    let t = `ТАБЕЛЬ: ${name}\n` + (period ? `Период: ${period}\n` : '') + '─'.repeat(50)+'\n';
-    t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n' + '─'.repeat(50)+'\n';
-    rows.forEach(r=>{
-      const d = r.date.padEnd(7);
-      const m = (r.machine||'').substring(0,15).padEnd(16);
-      const a = (r.address||'').substring(0,22).padEnd(23);
-      const h = String(r.hours||'').padEnd(3);
-      const tr = String(r.trips||'').padEnd(4);
-      const p = r.pay ? fmt(r.pay)+' ₽' : '—';
-      t += `${d} ${m} ${a} ${h} ${tr} ${p}\n`;
-    });
+async function generatePDFBlob() {
+  return new Promise(async (resolve) => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    
+    // Загружаем кириллический шрифт
+    const fontLoaded = await loadCustomFont(doc);
+        const name = document.getElementById('drv-name').value.trim() || 'Водитель';
+    const period = document.getElementById('drv-period').value.trim() || '';
+    const adv = parseFloat(document.getElementById('advance').value) || 0;
+    const off = parseFloat(document.getElementById('official').value) || 0;
+    const fuel = parseFloat(document.getElementById('fuel').value) || 0;
+    const oklad = parseFloat(document.getElementById('drv-oklad').value) || 0;
+    
     const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-    const adv = parseFloat(document.getElementById('advance').value)||0;
-    const off = parseFloat(document.getElementById('official').value)||0;
-    const fixS = parseFloat(document.getElementById('drv-oklad').value)||0;
-    const fuel = parseFloat(document.getElementById('fuel').value)||0;
-    const base = Math.max(tP, fixS);
-    t += '─'.repeat(50)+'\n';
-    t += `Итого: часов ${rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0)}  рейсов: ${rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0)}  начислено: ${fmt(tP)} ₽\n`;
-    if(adv) t+=`Аванс: −${fmt(adv)} ₽\n`;
-    if(off) t+=`Официальный доход: −${fmt(off)} ₽\n`;
-    if(fixS) t+=`Фикс оклад: ${fmt(fixS)} ₽\n`;
-    t+=`База: ${fmt(base)} ₽\n`;
-    if(fuel) t+=`Заправки: −${fmt(fuel)} ₽\n`;
-    t+=`НА РУКИ: ${fmt(base-off-adv-fuel)} ₽`;
-    navigator.clipboard.writeText(t).then(()=>alert('Скопировано!')).catch(()=>alert('Ошибка копирования'));
-  }
+    const tH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
+    const tT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
+    const base = Math.max(tP, oklad);
+    const rest = base - off - adv - fuel;
 
-  function clearAll() {
-    if(!confirm('Очистить всё?')) return;
-    rows = [];
-    document.getElementById('advance').value='';
-    document.getElementById('official').value='';    document.getElementById('fuel').value='';
-    document.getElementById('chat-in').value='';
-    render();
-  }
+    // Заголовки
+    doc.setFontSize(16);
+    doc.setFont('Roboto','bold');
+    doc.text('ТАБЕЛЬ: ' + name, 14, 16);
+    
+    doc.setFontSize(10);
+    doc.setFont('Roboto','normal');
+    doc.setTextColor(120);
+    if (period) doc.text('Период: ' + period, 14, 23);
+    
+    doc.setTextColor(0);
+    
+    // Таблица
+    const head = [['Дата','Машина','Тип работы','Маршрут','Груз','Заказчик','Часов','Рейсов','Начислено']];
+    const body = rows.map(r => [
+      r.date, 
+      r.machine || '—', 
+      r.workType || '—', 
+      (r.address||'—').substring(0,40), 
+      (r.cargo||'—').substring(0,25), 
+      (r.client||'—').substring(0,20),
+      r.hours || '—', 
+      r.trips || '—', 
+      r.pay ? fmt(r.pay) + ' ₽' : '—'
+    ]);
 
-  // ========== PDF ГЕНЕРАЦИЯ С КИРИЛЛИЦЕЙ ==========
-  
-  async function generatePDFBlob() {
-    return new Promise(async (resolve) => {
-      const { jsPDF } = window.jspdf;
+    doc.autoTable({
+      head, body, startY: period ? 28 : 22, 
+      styles: { fontSize: 8, cellPadding: 2, font: 'Roboto', fontStyle: 'normal' },
+      headStyles: { fillColor: [245, 166, 35], textColor: 0, fontStyle: 'bold', font: 'Roboto' },
+      alternateRowStyles: { fillColor: [245,245,245] },
+      columnStyles: { 
+        0: { cellWidth: 16 }, 1: { cellWidth: 24 }, 2: { cellWidth: 30 }, 
+        3: { cellWidth: 55 }, 4: { cellWidth: 35 }, 5: { cellWidth: 28 }, 
+        6: { cellWidth: 14 }, 7: { cellWidth: 14 }, 8: { cellWidth: 22, halign: 'right' } 
+      },
+      margin: { left: 14, right: 14 }    });
+
+    const finalY = doc.lastAutoTable.finalY + 8;
+    doc.setFontSize(9);
+    doc.setFont('Roboto','bold');
+    
+    const sumLines = [
+      ['Всего часов:', String(tH)], 
+      ['Всего рейсов:', String(tT)], 
+      ['Начислено по табелю:', fmt(tP) + ' ₽'], 
+      ['База расчета:', fmt(base) + ' ₽']
+    ];
+    if (off) sumLines.push(['Офиц. доход:', '-' + fmt(off) + ' ₽']);
+    if (adv) sumLines.push(['Аванс:', '-' + fmt(adv) + ' ₽']);
+    if (fuel) sumLines.push(['Заправки:', '-' + fmt(fuel) + ' ₽']);
+    sumLines.push(['НА РУКИ:', fmt(rest) + ' ₽']);
+
+    let y = finalY;
+    sumLines.forEach((sl, idx) => {
+      if (idx === sumLines.length-1) { doc.setFontSize(12); doc.setTextColor(46, 204, 113); }
+      else { doc.setFontSize(9); doc.setTextColor(0); }
       
-      // Загружаем шрифт Roboto с поддержкой кириллицы
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      
-      try {
-        // Используем метод добавления шрифта по URL (работает в новых версиях jsPDF)
-        await doc.addFontFromURL(
-          'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2', 
-          'Roboto', 
-          'normal'
-        );
-        doc.setFont('Roboto');
-      } catch (e) {
-        console.warn("Не удалось загрузить шрифт Roboto, используется стандартный (кириллица может не отображаться)", e);
-        doc.setFont('helvetica');
-      }
-
-      const name = document.getElementById('drv-name').value.trim() || 'Водитель';
-      const period = document.getElementById('drv-period').value.trim() || '';
-      const adv = parseFloat(document.getElementById('advance').value) || 0;
-      const off = parseFloat(document.getElementById('official').value) || 0;
-      const fuel = parseFloat(document.getElementById('fuel').value) || 0;
-      const oklad = parseFloat(document.getElementById('drv-oklad').value) || 0;
-      
-      const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-      const tH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-      const tT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-      const base = Math.max(tP, oklad);
-      const rest = base - off - adv - fuel;
-
-      // Заголовки
-      doc.setFontSize(16);
-      doc.setFont('Roboto','bold');
-      doc.text('ТАБЕЛЬ: ' + name, 14, 16);
-      
-      doc.setFontSize(10);
-      doc.setFont('Roboto','normal');
-      doc.setTextColor(120);
-      if (period) doc.text('Период: ' + period, 14, 23);
-            doc.setTextColor(0);
-      
-      // Таблица
-      const head = [['Дата','Машина','Тип работы','Маршрут','Груз','Заказчик','Часов','Рейсов','Начислено']];
-      const body = rows.map(r => [
-        r.date, 
-        r.machine || '—', 
-        r.workType || '—', 
-        (r.address||'—').substring(0,40), 
-        (r.cargo||'—').substring(0,25), 
-        (r.client||'—').substring(0,20),
-        r.hours || '—', 
-        r.trips || '—', 
-        r.pay ? fmt(r.pay) + ' ₽' : '—'
-      ]);
-
-      doc.autoTable({
-        head, body, startY: period ? 28 : 22, styles: { fontSize: 8, cellPadding: 2, font: 'Roboto' },
-        headStyles: { fillColor: [245, 166, 35], textColor: 0, fontStyle: 'bold', font: 'Roboto' }, // Оранжевая шапка
-        alternateRowStyles: { fillColor: [245,245,245] },
-        columnStyles: { 0: { cellWidth: 16 }, 1: { cellWidth: 24 }, 2: { cellWidth: 30 }, 3: { cellWidth: 55 }, 4: { cellWidth: 35 }, 5: { cellWidth: 28 }, 6: { cellWidth: 14 }, 7: { cellWidth: 14 }, 8: { cellWidth: 22, halign: 'right' } },
-        margin: { left: 14, right: 14 }
-      });
-
-      const finalY = doc.lastAutoTable.finalY + 8;
-      doc.setFontSize(9);
-      doc.setFont('Roboto','bold');
-      
-      const sumLines = [
-        ['Всего часов:', String(tH)], 
-        ['Всего рейсов:', String(tT)], 
-        ['Начислено по табелю:', fmt(tP) + ' ₽'], 
-        ['База расчета:', fmt(base) + ' ₽']
-      ];
-      if (off) sumLines.push(['Офиц. доход:', '-' + fmt(off) + ' ₽']);
-      if (adv) sumLines.push(['Аванс:', '-' + fmt(adv) + ' ₽']);
-      if (fuel) sumLines.push(['Заправки:', '-' + fmt(fuel) + ' ₽']);
-      sumLines.push(['НА РУКИ:', fmt(rest) + ' ₽']);
-
-      let y = finalY;
-      sumLines.forEach((sl, idx) => {
-        if (idx === sumLines.length-1) { doc.setFontSize(12); doc.setTextColor(46, 204, 113); } // Зеленый для итого
-        else { doc.setFontSize(9); doc.setTextColor(0); }
-        
-        doc.text(sl[0], 14, y);
-        doc.text(sl[1], 80, y, { align: 'right' });
-        y += 6;
-      });
-
-      const pdfBlob = doc.output('blob');      resolve(pdfBlob);
+      doc.text(sl[0], 14, y);
+      doc.text(sl[1], 80, y, { align: 'right' });
+      y += 6;
     });
-  }
 
-  async function savePDF() {
-    try {
-      const blob = await generatePDFBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `tabel_${Date.now()}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch(e) { alert('Ошибка при сохранении PDF: ' + e.message); }
-  }
-
-  async function sharePDF() {
-    if (!navigator.share) { alert('Ваш браузер не поддерживает отправку файлов'); return; }
-    try {
-      const blob = await generatePDFBlob();
-      const file = new File([blob], 'tabel.pdf', { type: 'application/pdf' });
-      await navigator.share({ title: 'Табель водителя', files: [file] });
-    } catch(e) { if (e.name !== 'AbortError') alert('Ошибка при отправке'); }
-  }
-
-  function render() { renderTableOnly(); recalc(); }
-
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabId = tab.getAttribute('data-tab');
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.querySelectorAll('.tab-content').forEach(cont => cont.classList.remove('active'));
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      if (tabId === 'tabel') renderTableOnly();
-      if (tabId === 'itogi') recalc();
-    });
+    const pdfBlob = doc.output('blob');
+    resolve(pdfBlob);
   });
+}
 
-  document.getElementById('parse-btn').addEventListener('click', parsePaste);
-  document.getElementById('add-manual-btn').addEventListener('click', addManual);
-  document.getElementById('copy-text-btn').addEventListener('click', copyText);
-  document.getElementById('clear-all-btn').addEventListener('click', clearAll);
-  document.getElementById('save-pdf-btn').addEventListener('click', savePDF);
-  document.getElementById('share-pdf-btn').addEventListener('click', sharePDF);
+async function savePDF() {
+  try {
+    const blob = await generatePDFBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tabel_${Date.now()}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) { alert('Ошибка при сохранении PDF: ' + e.message); }
+}
 
-  window.upd = upd;
-  window.del = del;
-  loadSettings();
-  render();</script>
+async function sharePDF() {
+  if (!navigator.share) { alert('Ваш браузер не поддерживает отправку файлов'); return; }
+  try {
+    const blob = await generatePDFBlob();
+    const file = new File([blob], 'tabel.pdf', { type: 'application/pdf' });
+    await navigator.share({ title: 'Табель водителя', files: [file] });  } catch(e) { if (e.name !== 'AbortError') alert('Ошибка при отправке'); }
+}
+
+function render() { renderTableOnly(); recalc(); }
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tabId = tab.getAttribute('data-tab');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(cont => cont.classList.remove('active'));
+    document.getElementById(`tab-${tabId}`).classList.add('active');
+    if (tabId === 'tabel') renderTableOnly();
+    if (tabId === 'itogi') recalc();
+  });
+});
+
+document.getElementById('parse-btn').addEventListener('click', parsePaste);
+document.getElementById('add-manual-btn').addEventListener('click', addManual);
+document.getElementById('copy-text-btn').addEventListener('click', copyText);
+document.getElementById('clear-all-btn').addEventListener('click', clearAll);
+document.getElementById('save-pdf-btn').addEventListener('click', savePDF);
+document.getElementById('share-pdf-btn').addEventListener('click', sharePDF);
+
+window.upd = upd;
+window.del = del;
+loadSettings();
+render();
+</script>
 </body>
 </html>
