@@ -1,755 +1,894 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#f5a623">
-<title>Мой Табель</title>
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Табель">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;700&display=swap');
-:root{--bg:#0a0a0a;--bg2:#141414;--bg3:#1e1e1e;--border:#2a2a2a;--accent:#f5a623;--red:#e74c3c;--green:#2ecc71;--text:#f0f0f0;--text2:#888;--text3:#555;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--display:'Bebas Neue',cursive}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--sans)}
-.wrap{max-width:900px;margin:0 auto;padding:16px 16px 80px}
-.hdr{padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:18px}
-.hdr-title{font-family:var(--display);font-size:26px;letter-spacing:3px;color:var(--accent)}
-.hdr-sub{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:5px}
-.inp{width:100%;padding:11px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:15px;outline:none;transition:border-color .15s;-webkit-appearance:none}
-.inp:focus{border-color:var(--accent)}
-.inp::placeholder{color:var(--text3)}
-select.inp{cursor:pointer}
-.sec{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin:18px 0 10px}
-.sec::after{content:'';flex:1;height:1px;background:var(--border)}
-textarea.inp{min-height:130px;resize:vertical;line-height:1.6;font-size:14px}
-.btn{padding:14px;background:var(--accent);color:#000;border:none;border-radius:8px;font-family:var(--display);font-size:18px;letter-spacing:2px;cursor:pointer;transition:opacity .15s;width:100%;margin-top:10px}
-.btn:active{opacity:.8}
-.btn-sm{padding:9px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--text2);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap}
-.btn-sm:hover{border-color:var(--accent);color:var(--accent)}
-.btn-sm.red:hover{border-color:var(--red);color:var(--red)}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap}
-/* TABLE */
-.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
-table{width:100%;border-collapse:collapse;min-width:780px;font-size:13px}
-thead tr{background:var(--bg3)}
-th{padding:9px 10px;text-align:left;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(245,166,35,.03)}
-.c-date{font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--text2)}
-.c-machine{font-size:12px;font-weight:600;color:var(--accent);white-space:nowrap}
-.c-cargo{font-size:12px;color:#3498db}
-.c-client{font-size:12px;color:var(--text2);font-style:italic}
-.c-type{font-size:10px;font-family:var(--mono);color:var(--text3)}
-.c-num{text-align:center}
-.c-num input{width:52px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:13px;padding:4px 5px;text-align:center;outline:none}
-.c-num input:focus{border-color:var(--accent)}
-.c-pay input{width:96px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--green);font-family:var(--mono);font-size:13px;font-weight:600;padding:4px 6px;text-align:right;outline:none}
-.c-pay input:focus{border-color:var(--accent)}
-.c-del button{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 6px}
-.c-del button:hover{color:var(--red)}
-.c-addr{max-width:200px;font-size:13px}
-.c-addr span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;cursor:default}
-/* ADD ROW */
-.add-row{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;margin-top:6px}
-.add-row .inp{flex:1;min-width:70px;padding:9px 10px;font-size:13px}
-.add-row .btn-add{padding:9px 18px;background:var(--accent);color:#000;border:none;border-radius:6px;font-family:var(--display);font-size:15px;letter-spacing:1px;cursor:pointer;white-space:nowrap}
-/* TOTAL */
-.tot-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
-.t-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.t-row:last-child{border-bottom:none}
-.t-key{font-family:var(--mono);font-size:12px;color:var(--text2)}
-.t-val{font-family:var(--mono);font-size:15px;font-weight:600}
-.t-val.g{color:var(--green)} .t-val.r{color:var(--red)} .t-val.a{color:var(--accent)}
-.t-inp{width:120px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:14px;font-weight:600;padding:5px 8px;text-align:right;outline:none}
-.t-inp:focus{border-color:var(--accent)}
-.empty{text-align:center;padding:32px;color:var(--text3);font-family:var(--mono);font-size:12px;letter-spacing:1px}
-/* badges */
-.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-family:var(--mono);margin-left:4px}
-.badge-evak{background:rgba(245,166,35,.15);color:var(--accent)}
-.badge-mini{background:rgba(52,152,219,.15);color:#3498db}
-.badge-dump{background:rgba(46,204,113,.15);color:var(--green)}
-/* PRINT */
-@media print{
-  .no-print{display:none!important}
-  .pdf-only{display:block!important}
-  body,html{background:#fff;color:#000}
-  .wrap{padding:0;max-width:100%}
-  .card{background:#fff;border:1px solid #ddd}
-  .tbl-wrap{border:1px solid #ccc;overflow:visible}
-  table{min-width:auto;font-size:11px}
-  th{background:#f5f5f5!important;color:#333!important;padding:5px 7px}
-  td{padding:5px 7px}
-  .c-pay input,.c-num input{border:none;background:transparent}
-  .tot-card{background:#fff;border:1px solid #ccc}
-  .t-inp{border:none;background:transparent}
-  .sec::after{background:#ccc}
-  .hdr-title{color:#000}
-}
-.pdf-only{display:none}
-::-webkit-scrollbar{height:4px;width:4px}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#f5a623">
+  <title>Мой Табель</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Табель">
+  <!-- Библиотеки для PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      background-color: #0a0a0a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #f0f0f0;
+    }
+    .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+    /* Шапка */
+    .header { margin-bottom: 24px; text-align: center; }
+    .app-title { font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #f5a623; margin-bottom: 4px; }
+    .app-sub { font-size: 12px; color: #888; letter-spacing: 1px; }
+    /* Вкладки */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: #141414;
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #888;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .tab.active {
+      background: #f5a623;
+      color: #000;
+    }
+    /* Карточки */
+    .card {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2a2a2a;
+    }
+    /* Поля */
+    .field-group { margin-bottom: 14px; }
+    .field-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #aaa;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .field-input, .field-textarea {
+      width: 100%;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #f0f0f0;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .field-input:focus, .field-textarea:focus { border-color: #f5a623; }
+    .field-textarea { min-height: 130px; resize: vertical; }
+    .row-2 { display: flex; gap: 12px; }
+    .row-2 .field-group { flex: 1; }
+    .row-3 { display: flex; gap: 12px; flex-wrap: wrap; }
+    .row-3 .field-group { flex: 1; min-width: 100px; }
+    /* Кнопки */
+    .btn {
+      background: #f5a623;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 1px;
+      color: #000;
+      width: 100%;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 6px;
+    }
+    .btn:active { opacity: 0.8; }
+    .btn-small {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      color: #aaa;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-small:hover { border-color: #f5a623; color: #f5a623; }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    /* Таблица */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+      background: #0a0a0a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 700px;
+    }
+    th {
+      background: #1e1e1e;
+      padding: 10px 8px;
+      text-align: left;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #888;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #2a2a2a;
+      vertical-align: middle;
+    }
+    .c-date { font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .c-machine { font-weight: 600; color: #f5a623; white-space: nowrap; }
+    .c-num input, .c-pay input {
+      width: 60px;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      padding: 6px;
+      color: white;
+      text-align: center;
+      font-family: monospace;
+    }
+    .c-pay input { text-align: right; color: #2ecc71; font-weight: 600; }
+    .c-del button {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    /* Итоговая карточка */
+    .total-card {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .total-row:last-child { border-bottom: none; }
+    .total-label { font-size: 13px; color: #aaa; }
+    .total-value { font-weight: 700; }
+    .total-value.green { color: #2ecc71; }
+    .total-value.orange { color: #f5a623; }
+    .total-input {
+      width: 120px;
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: white;
+      text-align: right;
+      font-weight: 600;
+    }
+    .hand-value { font-size: 24px; font-weight: 800; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-mini { background: rgba(52,152,219,0.2); color: #3498db; }
+    .badge-evak { background: rgba(245,166,35,0.2); color: #f5a623; }
+    .badge-dump { background: rgba(46,204,113,0.2); color: #2ecc71; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    @media (max-width: 480px) {
+      .app-container { padding: 12px; }
+      .row-3 { flex-direction: column; }
+    }
+    /* Модальное окно пароля */
+    .auth-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+    .auth-card {
+      background: #1e1e1e;
+      padding: 28px;
+      border-radius: 24px;
+      width: 280px;
+      text-align: center;
+      border: 1px solid #f5a623;
+    }
+    .auth-title { color: #f5a623; margin-bottom: 20px; font-size: 22px; font-weight: 800; }
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      background: #0a0a0a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .auth-btn {
+      background: #f5a623;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .auth-error { color: #e74c3c; font-size: 12px; margin-top: 12px; }
+  </style>
 </head>
 <body>
-<div class="wrap">
 
-<div class="hdr no-print">
-  <div class="hdr-title">МОЙ ТАБЕЛЬ</div>
-  <div class="hdr-sub">Вставь свои сообщения из чата → табель готов</div>
-</div>
-
-<!-- PDF шапка -->
-<div class="pdf-only" style="margin-bottom:16px">
-  <div style="font-size:18px;font-weight:700" id="pdf-title">Табель</div>
-  <div style="font-size:13px;color:#555;margin-top:4px" id="pdf-sub"></div>
-</div>
-
-<!-- НАСТРОЙКИ -->
-<div class="card no-print">
-  <div class="grid3">
-    <div><label class="lbl">Водитель (ФИО)</label><input class="inp" id="drv-name" placeholder="Иванов И.И." oninput="updateMeta()"></div>
-    <div><label class="lbl">Период</label><input class="inp" id="drv-period" placeholder="Май 2026" oninput="updateMeta()"></div>
-    <div><label class="lbl">Оклад фиксированный ₽</label><input class="inp" id="drv-oklad" type="number" placeholder="150000" inputmode="decimal" oninput="saveSettings();recalc()"></div>
+<!-- Модалка пароля -->
+<div id="auth-modal" class="auth-modal">
+  <div class="auth-card">
+    <div class="auth-title">Доступ по паролю</div>
+    <input type="password" id="auth-password" class="auth-input" placeholder="Введите пароль">
+    <button id="auth-submit" class="auth-btn">Войти</button>
+    <div id="auth-error" class="auth-error"></div>
   </div>
 </div>
 
-<!-- ВСТАВКА ЧАТА -->
-<div class="no-print">
-  <div class="sec">Вставь свои сообщения из чата</div>
-  <textarea class="inp" id="chat-in" placeholder="Дмитрий Самарский:
+<div id="main-app" style="display: none;">
+<div class="app-container">
+  <div class="header">
+    <div class="app-title">МОЙ ТАБЕЛЬ</div>
+    <div class="app-sub">Вставь сообщения из чата → табель готов</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="insert">Вставить</div>
+    <div class="tab" data-tab="tabel">Табель</div>
+    <div class="tab" data-tab="itogi">Итоги</div>
+  </div>
+
+  <!-- Вкладка Вставить -->
+  <div id="tab-insert" class="tab-content active">
+    <div class="card">
+      <div class="section-title">Настройки</div>
+      <div class="row-3">
+        <div class="field-group">
+          <label class="field-label">Водитель (ФИО)</label>
+          <input class="field-input" id="drv-name" placeholder="Иванов И.И.">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Период</label>
+          <input class="field-input" id="drv-period" placeholder="Май 2026">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Оклад фикс. ₽</label>
+          <input class="field-input" id="drv-oklad" type="number" placeholder="150000">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Вставь сообщения из чата</div>
+      <textarea class="field-textarea" id="chat-in" placeholder="Дмитрий Самарский:
 06.05 764 
 9 просека - ракита 1 рейс
 9 просека - база 2 рейса
 Простой 2 часа 40 минут
 
-Дмитрий Самарский:
-12.05 6547
+Вашик:
+07.05 эп
 Баланс тауер 4 часа чл
 
-Можно вставлять весь чат — приложение само возьмёт нужные строки"></textarea>
-  <button class="btn" onclick="parsePaste()">РАЗОБРАТЬ</button>
-</div>
+Дмитрий Самарский:
+12.05 2054
+перевозка мини-погрузчика"></textarea>
+      <button class="btn" id="parse-btn">РАЗОБРАТЬ</button>
+    </div>
 
-<!-- ТАБЛИЦА -->
-<div class="sec" style="margin-top:20px">Табель <span id="badge" style="color:var(--accent);margin-left:4px"></span></div>
+    <div class="card">
+      <div class="section-title">Добавить вручную</div>
+      <div class="row-3">
+        <input class="field-input" id="a-date" placeholder="01.05" style="flex:1">
+        <input class="field-input" id="a-machine" placeholder="607" style="flex:1">
+        <input class="field-input" id="a-addr" placeholder="Адрес / маршрут" style="flex:2">
+      </div>
+      <div class="row-3" style="margin-top: 8px;">
+        <input class="field-input" id="a-cargo" placeholder="Груз" style="flex:1">
+        <input class="field-input" id="a-client" placeholder="Заказчик" style="flex:1">
+        <input class="field-input" id="a-hours" type="number" placeholder="ч" style="flex:0.5">
+        <input class="field-input" id="a-trips" type="number" placeholder="рей" style="flex:0.5">
+      </div>
+      <button class="btn" id="add-manual-btn" style="background:#1e1e1e; color:#f5a623; border:1px solid #2a2a2a; margin-top:12px;">+ ДОБАВИТЬ СТРОКУ</button>
+    </div>
+  </div>
 
-<div class="tbl-wrap">
-  <table>
-    <thead><tr>
-      <th>Дата</th>
-      <th>Своя машина</th>
-      <th>Тип работы</th>
-      <th>Адрес / маршрут</th>
-      <th>Груз / техника</th>
-      <th>Заказчик</th>
-      <th style="text-align:center">Часов</th>
-      <th style="text-align:center">Рейсов</th>
-      <th style="text-align:right">Начислено ₽</th>
-      <th class="no-print"></th>
-    </tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
+  <!-- Вкладка Табель -->
+  <div id="tab-tabel" class="tab-content">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Дата</th><th>Машина</th><th>Тип работы</th><th>Адрес</th><th>Груз</th><th>Заказчик</th><th>Часов</th><th>Рейсов</th><th>Начислено</th><th></th></tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-small" id="copy-text-btn">📋 Копировать текстом</button>
+      <button class="btn-small" id="clear-all-btn" style="color:#e74c3c;">✕ Очистить</button>
+    </div>
+  </div>
 
-<!-- ДОБАВИТЬ ВРУЧНУЮ -->
-<div class="no-print">
-  <div class="add-row">
-    <input class="inp" id="a-date" placeholder="01.05" style="max-width:64px">
-    <input class="inp" id="a-machine" placeholder="607" style="max-width:70px">
-    <input class="inp" id="a-addr" placeholder="Адрес / маршрут" style="flex:3">
-    <input class="inp" id="a-cargo" placeholder="Груз" style="flex:1;min-width:80px">
-    <input class="inp" id="a-client" placeholder="Заказчик" style="flex:1;min-width:80px">
-    <input class="inp" id="a-hours" type="number" placeholder="ч" style="max-width:52px" inputmode="decimal">
-    <input class="inp" id="a-trips" type="number" placeholder="рей" style="max-width:52px" inputmode="decimal">
-    <button class="btn-add" onclick="addManual()">+ СТРОКА</button>
+  <!-- Вкладка Итоги -->
+  <div id="tab-itogi" class="tab-content">
+    <div class="total-card">
+      <div class="total-row"><span class="total-label">Всего часов</span><span class="total-value orange" id="tot-h">0</span></div>
+      <div class="total-row"><span class="total-label">Всего рейсов</span><span class="total-value" id="tot-t">0</span></div>
+      <div class="total-row"><span class="total-label">Начислено по табелю</span><span class="total-value orange" id="tot-p">0 ₽</span></div>
+      <div class="total-row"><span class="total-label">База расчёта <span id="baza-hint" style="font-size:10px;color:#888"></span></span><span class="total-value green" id="tot-baza">0 ₽</span></div>
+      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>
+      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>
+      <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
+      <div class="total-row" style="border-top:2px solid #2a2a2a; margin-top:8px; padding-top:14px;">
+        <span class="total-label" style="font-weight:800;">НА РУКИ</span>
+        <span class="total-value hand-value green" id="tot-rest">0 ₽</span>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn" id="save-pdf-btn" style="background:#f5a623; color:#000;">📄 Сохранить PDF</button>
+      <button class="btn" id="share-pdf-btn" style="background:#25D366; color:#000;">📤 Отправить PDF</button>
+    </div>
   </div>
 </div>
-
-<!-- ИТОГ -->
-<div class="sec">Итого</div>
-<div class="tot-card">
-  <div class="t-row"><span class="t-key">Всего часов</span><span class="t-val a" id="tot-h">0</span></div>
-  <div class="t-row"><span class="t-key">Всего рейсов</span><span class="t-val" id="tot-t">0</span></div>
-  <div class="t-row"><span class="t-key">Начислено по табелю</span><span class="t-val a" id="tot-p">0 ₽</span></div>
-  <div class="t-row">
-    <span class="t-key">База расчёта <span id="baza-hint" style="font-size:10px;color:var(--text3)"></span></span>
-    <span class="t-val g" id="tot-baza">0 ₽</span>
-  </div>
-  <div class="t-row">
-    <span class="t-key">Официальный доход</span>
-    <span><input class="t-inp no-print" id="official" type="number" placeholder="28500" inputmode="decimal" oninput="recalc()">
-    <span class="pdf-only" id="off-pdf" style="font-family:var(--mono);font-weight:600"></span></span>
-  </div>
-  <div class="t-row">
-    <span class="t-key">Авансы</span>
-    <span><input class="t-inp no-print" id="advance" type="number" placeholder="0" inputmode="decimal" oninput="recalc()">
-    <span class="pdf-only" id="adv-pdf" style="font-family:var(--mono);font-weight:600"></span></span>
-  </div>
-  <div class="t-row">
-    <span class="t-key">Заправки (топливная карта)</span>
-    <span><input class="t-inp no-print" id="fuel" type="number" placeholder="0" inputmode="decimal" oninput="recalc()">
-    <span class="pdf-only" id="fuel-pdf" style="font-family:var(--mono);font-weight:600"></span></span>
-  </div>
-  <div class="t-row" style="padding-top:12px;margin-top:4px;border-top:2px solid var(--border);border-bottom:none">
-    <span class="t-key" style="font-size:14px;color:var(--text)">НА РУКИ</span>
-    <span class="t-val" style="font-size:22px" id="tot-rest">0 ₽</span>
-  </div>
 </div>
-
-<!-- КНОПКИ -->
-<div class="btn-row no-print" style="margin-top:14px">
-  <button class="btn-sm" onclick="generatePDF()">📄 Сохранить PDF</button>
-  <button class="btn-sm" onclick="copyText()">📋 Копировать текстом</button>
-  <button class="btn-sm red" onclick="clearAll()">✕ Очистить</button>
-</div>
-
-</div><!-- wrap -->
 
 <script>
-// ===== СПРАВОЧНИК =====
-const MINI = new Set(['4850','4930','3977','6547']);
-const EVAK = new Set(['607','628']);
-const DUMP = new Set(['570','764','796','542','2054']);
-const ALL_MACHINES = new Set([...MINI,...EVAK,...DUMP]);
-
-const MACHINE_LABELS = {
-  '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
-  '607':'Эвак 607','628':'Эвак 628',
-  '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
-  '542':'Самосвал 542','2054':'Самосвал 2054'
-};
-
-// Заказчики-организации
-const ORG_CLIENTS = [
-  ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],
-  ['вдк','ВДК'],['профрент','Профрент'],['ситистрой','СитиСтрой'],['имплозия','Имплозия'],
-  ['баланс тауер','Баланс Тауэр'],['баланс тауэр','Баланс Тауэр'],
-  ['аглос','Аглос'],['эконом строй','Эконом Строй'],['склад ру','Склад РУ'],
-  ['цпс','ЦПС'],['бин','БИН'],['тананян','Тананян'],['самвел','Самвел'],
-  ['дима','Дима'],['валёк','Валёк'],['валек','Валёк'],['китб','КИТ'],['кит -','КИТ'],
-];
-
-function machineType(num) {
-  if (MINI.has(num)) return 'mini';
-  if (EVAK.has(num)) return 'evak';
-  if (DUMP.has(num)) return 'dump';
-  return '';
-}
-
-function findMachinesInText(text) {
-  const found = [];
-  for (const num of ALL_MACHINES) {
-    if (new RegExp('(?<![.,\\d])' + num + '(?![.,\\d])').test(text)) found.push(num);
-  }
-  return found;
-}
-
-function parseDate(s) {
-  const m = s.replace(/\s/g,'').match(/^(\d{1,2})[.,](\d{2})(?:[.,]\d{2,4})?$/);
-  return m ? m[1].padStart(2,'0') + '.' + m[2] : null;
-}
-
-function extractHours(text) {
-  const m = text.match(/(\d+(?:[.,]\d+)?)\s*час/i);
-  return m ? parseFloat(m[1].replace(',','.')) : null;
-}
-
-function extractTrips(text) {
-  const m = text.match(/(\d+)\s*рейс/i);
-  return m ? parseInt(m[1]) : null;
-}
-
-function extractMoney(text) {
-  // "чл 4000" или "чл 10" — число после ЧЛ
-  const m = text.match(/чл\s+(\d{3,6})/i);
-  if (m) return parseInt(m[1]);
-  // standalone >= 1000 не являющееся номером машины
-  const re = /(?<![.,\d])(\d{4,6})(?![.,\d])/g;
-  let mm;
-  while ((mm = re.exec(text)) !== null) {
-    const n = parseInt(mm[1]);
-    if (!ALL_MACHINES.has(String(n))) return n;
-  }
-  return null;
-}
-
-function extractClient(text) {
-  const tl = text.toLowerCase();
-  // ЧЛ
-  if (/\bчл\b/.test(tl)) return 'Частное лицо';
-  for (const [key, label] of ORG_CLIENTS) {
-    if (tl.includes(key)) return label;
-  }
-  return '';
-}
-
-function extractCargo(text) {
-  const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот',
-    'гилромотол','каток','подъёмник','подъемник','погрузчик','вилочный',
-    'мини-экскаватор','укладчик','оборудование'];
-  const tl = text.toLowerCase();
-  const found = cargo.filter(c => tl.includes(c));
-  return found.map(c => c.charAt(0).toUpperCase()+c.slice(1)).join(', ');
-}
-
-function cleanAddress(text) {
-  let s = text;
-  for (const num of ALL_MACHINES) s = s.replace(new RegExp('(?<![.,\\d])'+num+'(?![.,\\d])','g'),'');
-  s = s.replace(/\bэп\b/gi,'');
-  s = s.replace(/\d+(?:[.,]\d+)?\s*час(?:а|ов)?\b/gi,'');
-  s = s.replace(/\d+\s*рейс(?:а|ов)?\b/gi,'');
-  s = s.replace(/\d+(?:[.,]\d+)?\s*[тТ]\b/g,''); // тонны
-  s = s.replace(/\d+(?:[.,]\d+)?\s*[лЛ]\b/g,''); // литры
-  s = s.replace(/\bчл\b\s*\d*/gi,'');
-  s = s.replace(/[+]\s*\w+/g,''); // +щетка
-  s = s.replace(/\([^)]+\)/g,'');
-  for (const [key] of ORG_CLIENTS) s = s.replace(new RegExp('\\b'+key+'\\b','gi'),'');
-  s = s.replace(/\d{4,6}/g,''); // остатки чисел
-  s = s.replace(/\s{2,}/g,' ').trim().replace(/^[,.\s\-]+|[,.\s\-]+$/g,'').trim();
-  return s;
-}
-
-function isSkip(line) {
-  return /путевые за|новый месяц|заправляться|задаем|^\s*$/i.test(line);
-}
-
-function isTripLine(line) {
-  if (!line || line.length < 4) return false;
-  if (/простой/i.test(line)) return true; // простой с часами
-  if (line.includes(' - ') || line.includes(' – ')) return true;
-  if (/\d+\s*час|\d+\s*рейс/i.test(line)) return true;
-  if (line.length > 12) return true;
-  return false;
-}
-
-function determineWorkType(driverMachine, lineMachines, hours, trips) {
-  const dtype = machineType(driverMachine);
-  const minis = lineMachines.filter(m => MINI.has(m));
-
-  if (dtype === 'mini') return 'Работа на погрузчике';
-  if (dtype === 'evak' && minis.length) return 'Перевозка погрузчика';
-  if (dtype === 'evak') return 'Эвакуатор';
-  if (dtype === 'dump') return 'Самосвал';
-  return '';
-}
-
-// ===== DATA =====
-let rows = [];
-let uid = 1;
-
-// ===== PARSE =====
-function parsePaste() {
-  const text = document.getElementById('chat-in').value.trim();
-  if (!text) return;
-
-  const lines = text.split('\n');
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i].trim();
-
-    // Начало блока водителя: строка вида "Имя Фамилия:"
-    if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(line)) {
-      i++;
-      // пропускаем пустые
-      while (i < lines.length && !lines[i].trim()) i++;
-      if (i >= lines.length) break;
-
-      // Строка заголовка: дата + машина водителя
-      const header = lines[i].trim();
-      i++;
-
-      // парсим дату
-      const tokens = header.split(/\s+/);
-      let date = null;
-      let driverMachine = '';
-
-      for (const tok of tokens) {
-        const d = parseDate(tok);
-        if (d && !date) { date = d; continue; }
-        if (ALL_MACHINES.has(tok)) { driverMachine = tok; }
-      }
-      // машина могла быть слитно с датой
-      if (!driverMachine) {
-        const hm = findMachinesInText(header);
-        if (hm.length) driverMachine = hm[0];
-      }
-
-      if (!date) { i++; continue; }
-
-      // Собираем строки рейсов до следующего блока водителя
-      while (i < lines.length) {
-        const tline = lines[i].trim();
-        // следующий блок водителя
-        if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(tline)) break;
-        i++;
-        if (!tline || isSkip(tline)) continue;
-        if (!isTripLine(tline)) continue;
-
-        const lineMachines = findMachinesInText(tline);
-        const minis = lineMachines.filter(m => MINI.has(m));
-
-        const hours  = extractHours(tline);
-        const trips  = extractTrips(tline);
-        const money  = extractMoney(tline);
-        const client = extractClient(tline);
-        const cargo  = extractCargo(tline);
-        const addr   = cleanAddress(tline);
-        const workType = determineWorkType(driverMachine, lineMachines, hours, trips);
-
-        // Груз для эвакуатора = что везёт
-        let cargoFinal = cargo;
-        if (machineType(driverMachine) === 'evak' && minis.length) {
-          cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
-        }
-
-        rows.push({
-          id: uid++,
-          date,
-          machine: MACHINE_LABELS[driverMachine] || driverMachine,
-          workType,
-          address: addr,
-          cargo: cargoFinal,
-          client,
-          hours: hours || '',
-          trips: trips || '',
-          pay: money || '',
-        });
-      }
-    } else {
-      i++;
-    }
-  }
-
-  // Сортируем по дате
-  rows.sort((a,b) => {
-    const [ad,am] = a.date.split('.').map(Number);
-    const [bd,bm] = b.date.split('.').map(Number);
-    return (am-bm)||(ad-bd);
-  });
-
-  document.getElementById('chat-in').value = '';
-  render();
-}
-
-// ===== ADD MANUAL =====
-function addManual() {
-  const machine = document.getElementById('a-machine').value.trim();
-  const lineMachines = findMachinesInText(machine);
-  rows.push({
-    id: uid++,
-    date: document.getElementById('a-date').value.trim() || '—',
-    machine: MACHINE_LABELS[machine] || machine,
-    workType: '',
-    address: document.getElementById('a-addr').value.trim(),
-    cargo: document.getElementById('a-cargo').value.trim(),
-    client: document.getElementById('a-client').value.trim(),
-    hours: parseFloat(document.getElementById('a-hours').value) || '',
-    trips: parseInt(document.getElementById('a-trips').value) || '',
-    pay: '',
-  });
-  ['a-date','a-machine','a-addr','a-cargo','a-client','a-hours','a-trips'].forEach(id=>document.getElementById(id).value='');
-  render();
-}
-
-// ===== RENDER =====
-function render() {
-  document.getElementById('badge').textContent = rows.length ? `(${rows.length})` : '';
-  const tbody = document.getElementById('tbody');
-  if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="10"><div class="empty">Пусто — вставь сообщения или добавь строку вручную</div></td></tr>';
-    recalc(); return;
-  }
-
-  tbody.innerHTML = rows.map(r => {
-    // badge класс по типу машины
-    const mkey = Object.keys(MACHINE_LABELS).find(k => MACHINE_LABELS[k] === r.machine) || '';
-    const mtype = machineType(mkey);
-    const badgeCls = mtype==='mini'?'badge-mini':mtype==='evak'?'badge-evak':mtype==='dump'?'badge-dump':'';
-
-    return `<tr data-id="${r.id}">
-      <td class="c-date">${r.date}</td>
-      <td class="c-machine"><span class="badge ${badgeCls}">${r.machine||'—'}</span></td>
-      <td class="c-type">${r.workType}</td>
-      <td class="c-addr"><span title="${r.address}">${r.address||'—'}</span></td>
-      <td class="c-cargo">${r.cargo||'—'}</td>
-      <td class="c-client">${r.client||'—'}</td>
-      <td class="c-num"><input type="number" value="${r.hours}" placeholder="—" onchange="upd(${r.id},'hours',this.value)" inputmode="decimal"></td>
-      <td class="c-num"><input type="number" value="${r.trips}" placeholder="—" onchange="upd(${r.id},'trips',this.value)" inputmode="decimal"></td>
-      <td class="c-pay"><input type="number" value="${r.pay}" placeholder="—" onchange="upd(${r.id},'pay',this.value)" oninput="upd(${r.id},'pay',this.value)" inputmode="decimal"></td>
-      <td class="c-del no-print"><button onclick="del(${r.id})">✕</button></td>
-    </tr>`;
-  }).join('');
-
-  recalc();
-}
-
-function upd(id, field, val) {
-  const r = rows.find(x=>x.id===id);
-  if (!r) return;
-  r[field] = ['hours','trips','pay'].includes(field) ? (parseFloat(val)||'') : val;
-  recalc();
-}
-
-function del(id) {
-  rows = rows.filter(x=>x.id!==id);
-  render();
-}
-
-// ===== PERSIST (оклад и официальный доход сохраняются) =====
-function savePersist() {
-  localStorage.setItem('tabel_fix', document.getElementById('fix-salary').value||'');
-  localStorage.setItem('tabel_off', document.getElementById('official').value||'');
-}
-function loadPersist() {
-  const fix = localStorage.getItem('tabel_fix');
-  const off = localStorage.getItem('tabel_off');
-  if (fix) document.getElementById('fix-salary').value = fix;
-  if (off) document.getElementById('official').value = off;
-}
-
-// ===== RECALC =====
-function recalc() {
-  const totalH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-  const totalT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-  const rate   = parseFloat(document.getElementById('drv-rate').value)||0;
-  let totalP = 0;
-  rows.forEach(r=>{
-    if (r.pay!=='' && r.pay!==undefined) totalP+=parseFloat(r.pay)||0;
-    else if (rate && r.hours) totalP+=(parseFloat(r.hours)||0)*rate;
-  });
-
-  const fixSalary = parseFloat(document.getElementById('fix-salary').value)||0;
-  const adv       = parseFloat(document.getElementById('advance').value)||0;
-  const off       = parseFloat(document.getElementById('official').value)||0;
-  const fuel      = parseFloat(document.getElementById('fuel-card').value)||0;
-
-  // База = MAX(начислено, оклад)
-  const base = Math.max(totalP, fixSalary);
-  const rest = base - off - adv - fuel;
-
-  // Подпись базы
-  const baseLabel = document.getElementById('base-label');
-  if (fixSalary > 0) {
-    if (totalP >= fixSalary) {
-      baseLabel.innerHTML = 'База <span style="font-size:10px;color:var(--green)">(табель > оклад)</span>';
-    } else {
-      baseLabel.innerHTML = 'База <span style="font-size:10px;color:var(--text3)">(оклад > табель)</span>';
-    }
+  // ========== НАСТРОЙКИ ПАРОЛЯ ==========
+  const APP_PASSWORD = "tabel2025";   // измените на свой
+  if (sessionStorage.getItem("tabel_auth") === "true") {
+    document.getElementById("auth-modal").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
   } else {
-    baseLabel.innerHTML = 'База расчёта';
+    document.getElementById("auth-modal").style.display = "flex";
+    document.getElementById("main-app").style.display = "none";
+  }
+  document.getElementById("auth-submit").addEventListener("click", () => {
+    const input = document.getElementById("auth-password");
+    const errorDiv = document.getElementById("auth-error");
+    if (input.value === APP_PASSWORD) {
+      sessionStorage.setItem("tabel_auth", "true");
+      document.getElementById("auth-modal").style.display = "none";
+      document.getElementById("main-app").style.display = "block";
+      loadSettings();
+      render();
+    } else {
+      errorDiv.textContent = "Неверный пароль";
+      input.value = "";
+    }
+  });
+  document.getElementById("auth-password").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("auth-submit").click();
+  });
+
+  // ========== СПРАВОЧНИКИ ==========
+  // Свои машины (принадлежат водителю)
+  const OWN_MACHINES = new Set(['607','628','570','764','796','542','4850','4930','3977','6547','7368']);
+  // Все машины (включая чужие, для распознавания в грузе)
+  const ALL_MACHINES = new Set([...OWN_MACHINES, '2054']);
+  const MACHINE_LABELS = {
+    '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
+    '607':'Эвак 607','628':'Эвак 628',
+    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
+    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'
+  };
+  const ORG_CLIENTS = [
+    ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],
+    ['вдк','ВДК'],['профрент','Профрент'],['ситистрой','СитиСтрой'],['имплозия','Имплозия'],
+    ['баланс тауер','Баланс Тауэр'],['баланс тауэр','Баланс Тауэр'],
+    ['аглос','Аглос'],['эконом строй','Эконом Строй'],['склад ру','Склад РУ'],
+    ['цпс','ЦПС'],['бин','БИН'],['тананян','Тананян'],['самвел','Самвел'],
+    ['дима','Дима'],['валёк','Валёк'],['валек','Валёк'],['китб','КИТ'],['кит -','КИТ'],
+  ];
+
+  function machineType(num) {
+    if (['4850','4930','3977','6547','7368'].includes(num)) return 'mini';
+    if (['607','628'].includes(num)) return 'evak';
+    if (['570','764','796','542'].includes(num)) return 'dump';
+    return '';
   }
 
-  document.getElementById('tot-h').textContent    = totalH||0;
-  document.getElementById('tot-t').textContent    = totalT||0;
-  document.getElementById('tot-p').textContent    = fmt(totalP)+' ₽';
-  document.getElementById('tot-base').textContent = fmt(base)+' ₽';
-  document.getElementById('tot-rest').textContent = fmt(rest)+' ₽';
-  document.getElementById('tot-rest').className   = 't-val '+(rest>=0?'g':'r');
-  document.getElementById('adv-pdf').textContent  = fmt(adv)+' ₽';
-  document.getElementById('off-pdf').textContent  = fmt(off)+' ₽';
-  document.getElementById('fix-pdf').textContent  = fmt(fixSalary)+' ₽';
-  document.getElementById('fuel-pdf').textContent = fmt(fuel)+' ₽';
-}
-
-function fmt(n){ return Number(n||0).toLocaleString('ru-RU'); }
-
-// ===== SETTINGS PERSIST =====
-function saveSettings() {
-  const s = {
-    name:   document.getElementById('drv-name').value,
-    oklad:  document.getElementById('drv-oklad').value,
-    period: document.getElementById('drv-period').value,
-  };
-  localStorage.setItem('tabel_settings', JSON.stringify(s));
-}
-
-function loadSettings() {
-  try {
-    const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
-    if (s.name)   document.getElementById('drv-name').value   = s.name;
-    if (s.oklad)  document.getElementById('drv-oklad').value  = s.oklad;
-    if (s.period) document.getElementById('drv-period').value = s.period;
-  } catch(e) {}
-}
-
-// ===== META =====
-function updateMeta() {
-  saveSettings();
-  const name = document.getElementById('drv-name').value.trim();
-  const period = document.getElementById('drv-period').value.trim();
-  document.getElementById('pdf-title').textContent = 'Табель' + (name?' — '+name:'');
-  document.getElementById('pdf-sub').textContent   = period ? 'Период: '+period : '';
-}
-
-// ===== COPY =====
-function copyText() {
-  const name   = document.getElementById('drv-name').value.trim()||'Водитель';
-  const period = document.getElementById('drv-period').value.trim();
-  let t = `ТАБЕЛЬ: ${name}\n`;
-  if (period) t += `Период: ${period}\n`;
-  t += '─'.repeat(50)+'\n';
-  t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n';
-  t += '─'.repeat(50)+'\n';
-  rows.forEach(r=>{
-    const d  = r.date.padEnd(7);
-    const m  = (r.machine||'').substring(0,15).padEnd(16);
-    const a  = (r.address||'').substring(0,22).padEnd(23);
-    const h  = String(r.hours||'').padEnd(3);
-    const tr = String(r.trips||'').padEnd(4);
-    const p  = r.pay ? fmt(r.pay)+' ₽' : '—';
-    t += `${d} ${m} ${a} ${h} ${tr} ${p}\n`;
-  });
-  const tH=rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-  const tT=rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-  const tP=rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-  const adv=parseFloat(document.getElementById('advance').value)||0;
-  const off=parseFloat(document.getElementById('official').value)||0;
-  t += '─'.repeat(50)+'\n';
-  t += `Итого: ${tH}ч  рейсов: ${tT}  начислено: ${fmt(tP)} ₽\n`;
-  if(adv) t+=`Аванс: −${fmt(adv)} ₽\n`;
-  if(off) t+=`Официальная часть: −${fmt(off)} ₽\n`;
-  const fixS = parseFloat(document.getElementById('fix-salary').value)||0;
-  const fuel = parseFloat(document.getElementById('fuel-card').value)||0;
-  const base = Math.max(tP, fixS);
-  if(fixS) t+=`Фикс оклад: ${fmt(fixS)} RUB\n`;
-  t+=`База: ${fmt(base)} RUB\n`;
-  if(adv)  t+=`Авансы: -${fmt(adv)} RUB\n`;
-  if(off)  t+=`Официальный доход: -${fmt(off)} RUB\n`;
-  if(fuel) t+=`Топливная карта: -${fmt(fuel)} RUB\n`;
-  t+=`НА РУКИ: ${fmt(base-off-adv-fuel)} RUB`;
-  navigator.clipboard.writeText(t)
-    .then(()=>alert('Скопировано!'))
-    .catch(()=>alert('Ошибка — скопируй вручную'));
-}
-
-function clearAll() {
-  if(!confirm('Очистить всё?')) return;
-  rows=[];
-  document.getElementById('advance').value='';
-  document.getElementById('official').value='';
-  document.getElementById('chat-in').value='';
-  render();
-}
-
-loadPersist();
-render();
-
-// ===== PDF =====
-function generatePDF() {
-  const { jsPDF } = window.jspdf;
-  if (!jsPDF) { alert('PDF библиотека загружается, попробуй ещё раз'); return; }
-
-  const name   = document.getElementById('drv-name').value.trim() || 'Водитель';
-  const period = document.getElementById('drv-period').value.trim() || '';
-  const adv    = parseFloat(document.getElementById('advance').value) || 0;
-  const off    = parseFloat(document.getElementById('official').value) || 0;
-  const fuel   = parseFloat(document.getElementById('fuel').value) || 0;
-  const oklad  = parseFloat(document.getElementById('drv-oklad').value) || 0;
-  const tH     = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-  const tT     = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-  const tP     = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-  const baza   = oklad > 0 ? Math.max(tP, oklad) : tP;
-  const rest   = baza - off - adv - fuel;
-
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-  // Header
-  doc.setFontSize(16);
-  doc.setFont('helvetica','bold');
-  doc.text('TABEL: ' + name, 14, 16);
-  doc.setFontSize(10);
-  doc.setFont('helvetica','normal');
-  doc.setTextColor(120);
-  if (period) doc.text('Period: ' + period, 14, 23);
-  doc.setTextColor(0);
-
-  // Table
-  const head = [['Data','Mashina','Tip raboty','Marshrut / Obekt','Gruz / Tekhnika','Zakazchik','Chasov','Reysov','Nachisleno RUB']];
-  const body = rows.map(r => [
-    r.date,
-    r.machine || '—',
-    r.workType || '—',
-    (r.address || '—').substring(0, 40),
-    (r.cargo || '—').substring(0, 25),
-    (r.client || '—').substring(0, 20),
-    r.hours || '—',
-    r.trips || '—',
-    r.pay ? fmt(r.pay) : '—'
-  ]);
-
-  doc.autoTable({
-    head,
-    body,
-    startY: period ? 28 : 22,
-    styles: { fontSize: 8, cellPadding: 2 },
-    headStyles: { fillColor: [30, 30, 30], textColor: 255, fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
-    columnStyles: {
-      0: { cellWidth: 16 },
-      1: { cellWidth: 24 },
-      2: { cellWidth: 30 },
-      3: { cellWidth: 55 },
-      4: { cellWidth: 35 },
-      5: { cellWidth: 28 },
-      6: { cellWidth: 14 },
-      7: { cellWidth: 14 },
-      8: { cellWidth: 22, halign: 'right' },
-    },
-    margin: { left: 14, right: 14 },
-  });
-
-  const finalY = doc.lastAutoTable.finalY + 8;
-
-  // Summary box
-  doc.setFontSize(9);
-  doc.setFont('helvetica','bold');
-  const sumLines = [
-    ['Vsego chasov:', String(tH)],
-    ['Vsego reysov:', String(tT)],
-    ['Nachisleno po tabelyu:', fmt(tP) + ' RUB'],
-    ['Baza rascheta:', fmt(baza) + ' RUB'],
-  ];
-  if (off)  sumLines.push(['Ofits. dokhod:', '-' + fmt(off) + ' RUB']);
-  if (adv)  sumLines.push(['Avans:', '-' + fmt(adv) + ' RUB']);
-  if (fuel) sumLines.push(['Zapravki:', '-' + fmt(fuel) + ' RUB']);
-  sumLines.push(['NA RUKI:', fmt(rest) + ' RUB']);
-
-  let y = finalY;
-  sumLines.forEach((sl, idx) => {
-    if (idx === sumLines.length - 1) {
-      doc.setFontSize(11);
-      doc.setFont('helvetica','bold');
-    } else {
-      doc.setFontSize(9);
-      doc.setFont('helvetica','normal');
+  function findMachinesInText(text, includeAll = true) {
+    const set = includeAll ? ALL_MACHINES : OWN_MACHINES;
+    const found = [];
+    for (const num of set) {
+      if (new RegExp('(?<![.,\\d])' + num + '(?![.,\\d])').test(text)) found.push(num);
     }
-    doc.text(sl[0], 14, y);
-    doc.text(sl[1], 80, y, { align: 'right' });
-    y += 6;
+    return found;
+  }
+
+  function parseDate(s) {
+    const m = s.replace(/\s/g,'').match(/^(\d{1,2})[.,](\d{2})(?:[.,]\d{2,4})?$/);
+    return m ? m[1].padStart(2,'0') + '.' + m[2] : null;
+  }
+
+  function extractHours(text) {
+    const m = text.match(/(\d+(?:[.,]\d+)?)\s*час/i);
+    return m ? parseFloat(m[1].replace(',','.')) : null;
+  }
+  function extractTrips(text) {
+    const m = text.match(/(\d+)\s*рейс/i);
+    return m ? parseInt(m[1]) : null;
+  }
+  function extractMoney(text) {
+    const m = text.match(/чл\s+(\d{3,6})/i);
+    if (m) return parseInt(m[1]);
+    const re = /(?<![.,\d])(\d{4,6})(?![.,\d])/g;
+    let mm;
+    while ((mm = re.exec(text)) !== null) {
+      const n = parseInt(mm[1]);
+      if (!ALL_MACHINES.has(String(n))) return n;
+    }
+    return null;
+  }
+  function extractClient(text) {
+    const tl = text.toLowerCase();
+    if (/\bчл\b/.test(tl)) return 'Частное лицо';
+    for (const [key, label] of ORG_CLIENTS) {
+      if (tl.includes(key)) return label;
+    }
+    return '';
+  }
+  function extractCargo(text) {
+    const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот','каток','подъёмник','подъемник','погрузчик','вилочный','мини-экскаватор','укладчик','оборудование'];
+    const tl = text.toLowerCase();
+    const found = cargo.filter(c => tl.includes(c));
+    return found.map(c => c.charAt(0).toUpperCase()+c.slice(1)).join(', ');
+  }
+  function cleanAddress(text) {
+    let s = text;
+    for (const num of ALL_MACHINES) s = s.replace(new RegExp('(?<![.,\\d])'+num+'(?![.,\\d])','g'),'');
+    s = s.replace(/\bэп\b/gi,'');
+    s = s.replace(/\d+(?:[.,]\d+)?\s*час(?:а|ов)?\b/gi,'');
+    s = s.replace(/\d+\s*рейс(?:а|ов)?\b/gi,'');
+    s = s.replace(/\d+(?:[.,]\d+)?\s*[тТ]\b/g,'');
+    s = s.replace(/\d+(?:[.,]\d+)?\s*[лЛ]\b/g,'');
+    s = s.replace(/\bчл\b\s*\d*/gi,'');
+    s = s.replace(/[+]\s*\w+/g,'');
+    s = s.replace(/\([^)]+\)/g,'');
+    for (const [key] of ORG_CLIENTS) s = s.replace(new RegExp('\\b'+key+'\\b','gi'),'');
+    s = s.replace(/\d{4,6}/g,'');
+    s = s.replace(/\s{2,}/g,' ').trim().replace(/^[,.\s\-]+|[,.\s\-]+$/g,'').trim();
+    return s;
+  }
+  function isSkip(line) { return /путевые за|новый месяц|заправляться|задаем|^\s*$/i.test(line); }
+  function isTripLine(line) {
+    if (!line || line.length < 4) return false;
+    if (/простой/i.test(line)) return true;
+    if (line.includes(' - ') || line.includes(' – ')) return true;
+    if (/\d+\s*час|\d+\s*рейс/i.test(line)) return true;
+    if (line.length > 12) return true;
+    return false;
+  }
+  function determineWorkType(driverMachine, lineMachines) {
+    const dtype = machineType(driverMachine);
+    const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
+    if (dtype === 'mini') return 'Работа на погрузчике';
+    if (dtype === 'evak' && minis.length) return 'Перевозка погрузчика';
+    if (dtype === 'evak') return 'Эвакуатор';
+    if (dtype === 'dump') return 'Самосвал';
+    return '';
+  }
+
+  let rows = [];
+  let uid = 1;
+
+  // Парсер
+  function parsePaste() {
+    const text = document.getElementById('chat-in').value.trim();
+    if (!text) return;
+    const lines = text.split('\n');
+    let i = 0;
+    const newRows = [];
+    while (i < lines.length) {
+      const line = lines[i].trim();
+      // Блок водителя: любое имя с двоеточием
+      if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(line)) {
+        i++;
+        while (i < lines.length && !lines[i].trim()) i++;
+        if (i >= lines.length) break;
+        let header = lines[i].trim();
+        i++;
+        // Заменяем "эп" на "7368" в заголовке
+        header = header.replace(/\bэп\b/gi, '7368');
+        const tokens = header.split(/\s+/);
+        let date = null;
+        let driverMachine = '';
+        for (const tok of tokens) {
+          const d = parseDate(tok);
+          if (d && !date) { date = d; continue; }
+          if (OWN_MACHINES.has(tok)) { driverMachine = tok; }
+        }
+        if (!driverMachine) {
+          const hm = findMachinesInText(header, false);
+          if (hm.length) driverMachine = hm[0];
+        }
+        if (!date) continue;
+        while (i < lines.length) {
+          const tline = lines[i].trim();
+          if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(tline)) break;
+          i++;
+          if (!tline || isSkip(tline)) continue;
+          if (!isTripLine(tline)) continue;
+          // Заменяем "эп" на "7368" в строке рейса
+          let processedLine = tline.replace(/\bэп\b/gi, '7368');
+          const lineMachines = findMachinesInText(processedLine, true);
+          const hours = extractHours(processedLine);
+          const trips = extractTrips(processedLine);
+          const money = extractMoney(processedLine);
+          const client = extractClient(processedLine);
+          const cargo = extractCargo(processedLine);
+          const addr = cleanAddress(processedLine);
+          const workType = determineWorkType(driverMachine, lineMachines);
+          let cargoFinal = cargo;
+          if (machineType(driverMachine) === 'evak' && lineMachines.some(m => ['4850','4930','3977','6547','7368','2054'].includes(m))) {
+            const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
+            cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
+          }
+          newRows.push({
+            id: uid++,
+            date,
+            machine: MACHINE_LABELS[driverMachine] || driverMachine,
+            workType,
+            address: addr,
+            cargo: cargoFinal,
+            client,
+            hours: hours || '',
+            trips: trips || '',
+            pay: money || '',
+          });
+        }
+      } else {
+        i++;
+      }
+    }
+    newRows.sort((a,b) => {
+      const [ad,am] = a.date.split('.').map(Number);
+      const [bd,bm] = b.date.split('.').map(Number);
+      return (am-bm)||(ad-bd);
+    });
+    rows = [...rows, ...newRows];
+    document.getElementById('chat-in').value = '';
+    render();
+  }
+
+  function addManual() {
+    let machineRaw = document.getElementById('a-machine').value.trim();
+    if (machineRaw.toLowerCase() === 'эп') machineRaw = '7368';
+    const machineLabel = MACHINE_LABELS[machineRaw] || machineRaw;
+    rows.push({
+      id: uid++,
+      date: document.getElementById('a-date').value.trim() || '—',
+      machine: machineLabel,
+      workType: '',
+      address: document.getElementById('a-addr').value.trim(),
+      cargo: document.getElementById('a-cargo').value.trim(),
+      client: document.getElementById('a-client').value.trim(),
+      hours: parseFloat(document.getElementById('a-hours').value) || '',
+      trips: parseInt(document.getElementById('a-trips').value) || '',
+      pay: '',
+    });
+    ['a-date','a-machine','a-addr','a-cargo','a-client','a-hours','a-trips'].forEach(id=>document.getElementById(id).value='');
+    render();
+  }
+
+  function upd(id, field, val) {
+    const r = rows.find(x=>x.id===id);
+    if (!r) return;
+    r[field] = ['hours','trips','pay'].includes(field) ? (parseFloat(val)||'') : val;
+    recalc();
+    renderTableOnly();
+  }
+
+  function del(id) {
+    rows = rows.filter(x=>x.id!==id);
+    render();
+  }
+
+  function renderTableOnly() {
+    const tbody = document.getElementById('tbody');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто — вставь сообщения или добавь строку вручную</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const mkey = Object.keys(MACHINE_LABELS).find(k => MACHINE_LABELS[k] === r.machine) || '';
+      const mtype = machineType(mkey);
+      const badgeCls = mtype==='mini'?'badge-mini':mtype==='evak'?'badge-evak':mtype==='dump'?'badge-dump':'';
+      return `<tr data-id="${r.id}">
+        <td class="c-date">${r.date}</td>
+        <td class="c-machine"><span class="badge ${badgeCls}">${r.machine||'—'}</span></td>
+        <td style="font-size:10px;color:#aaa;">${r.workType}</td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${r.address}">${r.address||'—'}</td>
+        <td style="color:#3498db;">${r.cargo||'—'}</td>
+        <td style="color:#aaa;">${r.client||'—'}</td>
+        <td class="c-num"><input type="number" value="${r.hours}" onchange="upd(${r.id},'hours',this.value)"></td>
+        <td class="c-num"><input type="number" value="${r.trips}" onchange="upd(${r.id},'trips',this.value)"></td>
+        <td class="c-pay"><input type="number" value="${r.pay}" onchange="upd(${r.id},'pay',this.value)" placeholder="—"></td>
+        <td class="c-del"><button onclick="del(${r.id})">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function recalc() {
+    const totalH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
+    const totalT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
+    let totalP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+    const fixSalary = parseFloat(document.getElementById('drv-oklad').value)||0;
+    const adv = parseFloat(document.getElementById('advance').value)||0;
+    const off = parseFloat(document.getElementById('official').value)||0;
+    const fuel = parseFloat(document.getElementById('fuel').value)||0;
+    const base = Math.max(totalP, fixSalary);
+    const rest = base - off - adv - fuel;
+    const hintSpan = document.getElementById('baza-hint');
+    if (hintSpan) hintSpan.innerHTML = fixSalary > 0 ? (totalP >= fixSalary ? '(табель > оклад)' : '(оклад > табель)') : '';
+    document.getElementById('tot-h').textContent = totalH;
+    document.getElementById('tot-t').textContent = totalT;
+    document.getElementById('tot-p').textContent = fmt(totalP)+' ₽';
+    document.getElementById('tot-baza').textContent = fmt(base)+' ₽';
+    document.getElementById('tot-rest').textContent = fmt(rest)+' ₽';
+  }
+
+  function fmt(n){ return Number(n||0).toLocaleString('ru-RU'); }
+
+  function saveSettings() {
+    const s = {
+      name: document.getElementById('drv-name').value,
+      oklad: document.getElementById('drv-oklad').value,
+      period: document.getElementById('drv-period').value
+    };
+    localStorage.setItem('tabel_settings', JSON.stringify(s));
+  }
+  function loadSettings() {
+    try {
+      const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
+      if (s.name) document.getElementById('drv-name').value = s.name;
+      if (s.oklad) document.getElementById('drv-oklad').value = s.oklad;
+      if (s.period) document.getElementById('drv-period').value = s.period;
+    } catch(e) {}
+  }
+  document.getElementById('drv-name').addEventListener('input', saveSettings);
+  document.getElementById('drv-oklad').addEventListener('input', () => { saveSettings(); recalc(); });
+  document.getElementById('drv-period').addEventListener('input', saveSettings);
+  document.getElementById('official').addEventListener('input', recalc);
+  document.getElementById('advance').addEventListener('input', recalc);
+  document.getElementById('fuel').addEventListener('input', recalc);
+
+  function copyText() {
+    const name = document.getElementById('drv-name').value.trim()||'Водитель';
+    const period = document.getElementById('drv-period').value.trim();
+    let t = `ТАБЕЛЬ: ${name}\n`;
+    if (period) t += `Период: ${period}\n`;
+    t += '─'.repeat(50)+'\n';
+    t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n';
+    t += '─'.repeat(50)+'\n';
+    rows.forEach(r=>{
+      const d = r.date.padEnd(7);
+      const m = (r.machine||'').substring(0,15).padEnd(16);
+      const a = (r.address||'').substring(0,22).padEnd(23);
+      const h = String(r.hours||'').padEnd(3);
+      const tr = String(r.trips||'').padEnd(4);
+      const p = r.pay ? fmt(r.pay)+' ₽' : '—';
+      t += `${d} ${m} ${a} ${h} ${tr} ${p}\n`;
+    });
+    const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+    const adv = parseFloat(document.getElementById('advance').value)||0;
+    const off = parseFloat(document.getElementById('official').value)||0;
+    const fixS = parseFloat(document.getElementById('drv-oklad').value)||0;
+    const fuel = parseFloat(document.getElementById('fuel').value)||0;
+    const base = Math.max(tP, fixS);
+    t += '─'.repeat(50)+'\n';
+    t += `Итого: часов ${rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0)}  рейсов: ${rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0)}  начислено: ${fmt(tP)} ₽\n`;
+    if(adv) t+=`Аванс: −${fmt(adv)} ₽\n`;
+    if(off) t+=`Официальный доход: −${fmt(off)} ₽\n`;
+    if(fixS) t+=`Фикс оклад: ${fmt(fixS)} ₽\n`;
+    t+=`База: ${fmt(base)} ₽\n`;
+    if(fuel) t+=`Заправки: −${fmt(fuel)} ₽\n`;
+    t+=`НА РУКИ: ${fmt(base-off-adv-fuel)} ₽`;
+    navigator.clipboard.writeText(t).then(()=>alert('Скопировано!')).catch(()=>alert('Ошибка копирования'));
+  }
+
+  function clearAll() {
+    if(!confirm('Очистить всё?')) return;
+    rows = [];
+    document.getElementById('advance').value='';
+    document.getElementById('official').value='';
+    document.getElementById('fuel').value='';
+    document.getElementById('chat-in').value='';
+    render();
+  }
+
+  // Генерация PDF через html2pdf
+  async function generatePDFBlob() {
+    // Создаём временный элемент с отчётом
+    const name = document.getElementById('drv-name').value.trim()||'Водитель';
+    const period = document.getElementById('drv-period').value.trim()||'';
+    const adv = parseFloat(document.getElementById('advance').value)||0;
+    const off = parseFloat(document.getElementById('official').value)||0;
+    const fuel = parseFloat(document.getElementById('fuel').value)||0;
+    const oklad = parseFloat(document.getElementById('drv-oklad').value)||0;
+    const tH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
+    const tT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
+    const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+    const base = Math.max(tP, oklad);
+    const rest = base - off - adv - fuel;
+    const rowsHtml = rows.map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.machine||'—'}</td>
+        <td>${r.workType||'—'}</td>
+        <td>${r.address||'—'}</td>
+        <td>${r.cargo||'—'}</td>
+        <td>${r.client||'—'}</td>
+        <td style="text-align:center">${r.hours||'—'}</td>
+        <td style="text-align:center">${r.trips||'—'}</td>
+        <td style="text-align:right">${r.pay ? fmt(r.pay)+' ₽' : '—'}</td>
+      </tr>
+    `).join('');
+    const baseNote = oklad > 0 ? (tP >= oklad ? ' (табель > оклад)' : ' (оклад > табель)') : '';
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head><meta charset="UTF-8"><title>Табель</title>
+      <style>
+        body { font-family: 'Inter', Arial, sans-serif; margin: 20px; font-size: 12px; }
+        h1 { font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #1a1a1a; color: white; padding: 8px; text-align: left; }
+        td { border-bottom: 1px solid #ccc; padding: 6px; }
+        .totals { margin-top: 20px; max-width: 400px; }
+        .row { display: flex; justify-content: space-between; padding: 5px 0; }
+        .hand { font-size: 18px; font-weight: bold; color: green; margin-top: 10px; }
+      </style>
+      </head>
+      <body>
+      <h1>Табель ${name}</h1>
+      <div>Период: ${period}</div>
+      <table>
+        <thead><tr><th>Дата</th><th>Машина</th><th>Тип работы</th><th>Адрес</th><th>Груз</th><th>Заказчик</th><th>Часов</th><th>Рейсов</th><th>Начислено</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div class="totals">
+        <div class="row"><span>Всего часов:</span><span>${tH}</span></div>
+        <div class="row"><span>Всего рейсов:</span><span>${tT}</span></div>
+        <div class="row"><span>Начислено по табелю:</span><span>${fmt(tP)} ₽</span></div>
+        <div class="row"><span>База расчёта${baseNote}:</span><span>${fmt(base)} ₽</span></div>
+        ${off ? `<div class="row"><span>Официальный доход:</span><span>-${fmt(off)} ₽</span></div>` : ''}
+        ${adv ? `<div class="row"><span>Авансы:</span><span>-${fmt(adv)} ₽</span></div>` : ''}
+        ${fuel ? `<div class="row"><span>Заправки:</span><span>-${fmt(fuel)} ₽</span></div>` : ''}
+        <div class="row hand"><span>НА РУКИ</span><span>${fmt(rest)} ₽</span></div>
+      </div>
+      </body>
+      </html>
+    `;
+    const opt = { margin: [0.5,0.5,0.5,0.5], filename: 'tabel.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
+    const element = document.createElement('div');
+    element.innerHTML = html;
+    element.style.position = 'absolute';
+    element.style.top = '-9999px';
+    document.body.appendChild(element);
+    const pdf = await html2pdf().set(opt).from(element).outputPdf('blob');
+    document.body.removeChild(element);
+    return pdf;
+  }
+
+  async function savePDF() {
+    try {
+      const blob = await generatePDFBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tabel_${Date.now()}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch(e) { alert('Ошибка при сохранении PDF'); }
+  }
+
+  async function sharePDF() {
+    if (!navigator.share) { alert('Ваш браузер не поддерживает отправку файлов. Используйте кнопку "Сохранить PDF".'); return; }
+    try {
+      const blob = await generatePDFBlob();
+      const file = new File([blob], 'tabel.pdf', { type: 'application/pdf' });
+      await navigator.share({ title: 'Табель водителя', files: [file] });
+    } catch(e) { if (e.name !== 'AbortError') alert('Ошибка при отправке'); }
+  }
+
+  function render() {
+    renderTableOnly();
+    recalc();
+  }
+
+  // Переключение вкладок
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabId = tab.getAttribute('data-tab');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(cont => cont.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      if (tabId === 'tabel') renderTableOnly();
+      if (tabId === 'itogi') recalc();
+    });
   });
 
-  const filename = 'tabel_' + name.replace(/\s+/g,'_') + (period ? '_' + period.replace(/\s+/g,'_') : '') + '.pdf';
-  doc.save(filename);
-}
+  document.getElementById('parse-btn').addEventListener('click', parsePaste);
+  document.getElementById('add-manual-btn').addEventListener('click', addManual);
+  document.getElementById('copy-text-btn').addEventListener('click', copyText);
+  document.getElementById('clear-all-btn').addEventListener('click', clearAll);
+  document.getElementById('save-pdf-btn').addEventListener('click', savePDF);
+  document.getElementById('share-pdf-btn').addEventListener('click', sharePDF);
 
-// ===== SERVICE WORKER =====
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
-
+  window.upd = upd;
+  window.del = del;
+  loadSettings();
+  render();
 </script>
 </body>
 </html>
