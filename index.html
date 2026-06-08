@@ -5,283 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <meta name="theme-color" content="#f5a623">
   <title>Мой Табель</title>
-  <link rel="manifest" href="manifest.json">
+  <!-- Для PWA нужен отдельный файл manifest.json, но мета-теги ниже помогут на iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Табель">
-  <!-- Библиотеки для PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <!-- jsPDF и плагин таблицы -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-    body {
-      background-color: #0a0a0a;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #f0f0f0;
-    }
-    .app-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px 16px 40px;
-    }
-    /* Шапка */
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #0a0a0a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #f0f0f0; }
+    .app-container { max-width: 600px; margin: 0 auto; padding: 20px 16px 40px; }
+    
+    /* Header */
     .header { margin-bottom: 24px; text-align: center; }
     .app-title { font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #f5a623; margin-bottom: 4px; }
     .app-sub { font-size: 12px; color: #888; letter-spacing: 1px; }
-    /* Вкладки */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      background: #141414;
-      border-radius: 16px;
-      padding: 4px;
-      margin-bottom: 20px;
-    }
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 0;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 14px;
-      color: #888;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .tab.active {
-      background: #f5a623;
-      color: #000;
-    }
-    /* Карточки */
-    .card {
-      background: #141414;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #888;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: #2a2a2a;
-    }
-    /* Поля */
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 8px; background: #141414; border-radius: 16px; padding: 4px; margin-bottom: 20px; }
+    .tab { flex: 1; text-align: center; padding: 10px 0; border-radius: 12px; font-weight: 600; font-size: 14px; color: #888; cursor: pointer; transition: 0.2s; }
+    .tab.active { background: #f5a623; color: #000; }
+    
+    /* Cards & Inputs */
+    .card { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 18px; margin-bottom: 20px; }
+    .section-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: #2a2a2a; }
+    
     .field-group { margin-bottom: 14px; }
-    .field-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #aaa;
-      margin-bottom: 5px;
-      display: block;
-    }
-    .field-input, .field-textarea {
-      width: 100%;
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      border-radius: 10px;
-      padding: 12px 14px;
-      color: #f0f0f0;
-      font-size: 15px;
-      font-family: inherit;
-      outline: none;
-      transition: border 0.2s;
-    }
+    .field-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; color: #aaa; margin-bottom: 5px; display: block; }
+    .field-input, .field-textarea { width: 100%; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 10px; padding: 12px 14px; color: #f0f0f0; font-size: 15px; font-family: inherit; outline: none; }
     .field-input:focus, .field-textarea:focus { border-color: #f5a623; }
     .field-textarea { min-height: 130px; resize: vertical; }
-    .row-2 { display: flex; gap: 12px; }
-    .row-2 .field-group { flex: 1; }
+    
     .row-3 { display: flex; gap: 12px; flex-wrap: wrap; }
     .row-3 .field-group { flex: 1; min-width: 100px; }
-    /* Кнопки */
-    .btn {
-      background: #f5a623;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: 1px;
-      color: #000;
-      width: 100%;
-      cursor: pointer;
-      transition: opacity 0.2s;
-      margin-top: 6px;
-    }
+    
+    /* Buttons */
+    .btn { background: #f5a623; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #000; width: 100%; cursor: pointer; }
     .btn:active { opacity: 0.8; }
-    .btn-small {
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      color: #aaa;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-small:hover { border-color: #f5a623; color: #f5a623; }
+    .btn-small { background: #1e1e1e; border: 1px solid #2a2a2a; color: #aaa; padding: 10px 16px; border-radius: 10px; font-size: 12px; cursor: pointer; }    .btn-small:hover { border-color: #f5a623; color: #f5a623; }
     .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    /* Таблица */
-    .table-wrapper {
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid #2a2a2a;
-      background: #0a0a0a;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      min-width: 700px;
-    }
-    th {
-      background: #1e1e1e;
-      padding: 10px 8px;
-      text-align: left;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #888;
-      border-bottom: 1px solid #2a2a2a;
-    }
-    td {
-      padding: 8px;
-      border-bottom: 1px solid #2a2a2a;
-      vertical-align: middle;
-    }
+    
+    /* Table */
+    .table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid #2a2a2a; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 700px; }
+    th { background: #1e1e1e; padding: 10px 8px; text-align: left; font-size: 9px; font-weight: 600; letter-spacing: 1px; color: #888; }
+    td { padding: 8px; border-bottom: 1px solid #2a2a2a; }
+    
     .c-date { font-size: 11px; font-weight: 500; white-space: nowrap; }
     .c-machine { font-weight: 600; color: #f5a623; white-space: nowrap; }
-    .c-num input, .c-pay input {
-      width: 60px;
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      padding: 6px;
-      color: white;
-      text-align: center;
-      font-family: monospace;
-    }
+    .c-num input, .c-pay input { width: 60px; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 6px; padding: 6px; color: white; text-align: center; }
     .c-pay input { text-align: right; color: #2ecc71; font-weight: 600; }
-    .c-del button {
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    /* Итоговая карточка */
-    .total-card {
-      background: #141414;
-      border: 1px solid #2a2a2a;
-      border-radius: 16px;
-      padding: 16px;
-    }
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #2a2a2a;
-    }
+    .c-del button { background: none; border: none; color: #aaa; font-size: 16px; cursor: pointer; }
+    
+    /* Totals */
+    .total-card { background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 16px; }
+    .total-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #2a2a2a; }
     .total-row:last-child { border-bottom: none; }
     .total-label { font-size: 13px; color: #aaa; }
     .total-value { font-weight: 700; }
     .total-value.green { color: #2ecc71; }
     .total-value.orange { color: #f5a623; }
-    .total-input {
-      width: 120px;
-      background: #1e1e1e;
-      border: 1px solid #2a2a2a;
-      border-radius: 8px;
-      padding: 6px 10px;
-      color: white;
-      text-align: right;
-      font-weight: 600;
-    }
+    .total-input { width: 120px; background: #1e1e1e; border: 1px solid #2a2a2a; border-radius: 8px; padding: 6px 10px; color: white; text-align: right; }
     .hand-value { font-size: 24px; font-weight: 800; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 600;
-    }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
     .badge-mini { background: rgba(52,152,219,0.2); color: #3498db; }
     .badge-evak { background: rgba(245,166,35,0.2); color: #f5a623; }
     .badge-dump { background: rgba(46,204,113,0.2); color: #2ecc71; }
+    
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    
     @media (max-width: 480px) {
       .app-container { padding: 12px; }
       .row-3 { flex-direction: column; }
     }
-    /* Модальное окно пароля */
-    .auth-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-    .auth-card {
-      background: #1e1e1e;
-      padding: 28px;
-      border-radius: 24px;
-      width: 280px;
-      text-align: center;
-      border: 1px solid #f5a623;
-    }
+    
+    /* Auth Modal */
+    .auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+    .auth-card { background: #1e1e1e; padding: 28px; border-radius: 24px; width: 280px; text-align: center; border: 1px solid #f5a623; }
     .auth-title { color: #f5a623; margin-bottom: 20px; font-size: 22px; font-weight: 800; }
-    .auth-input {
-      width: 100%;
-      padding: 12px;
-      background: #0a0a0a;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      color: white;
-      font-size: 16px;
-      margin-bottom: 16px;
-    }
-    .auth-btn {
-      background: #f5a623;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-    }
+    .auth-input { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 12px; color: white; font-size: 16px; margin-bottom: 16px; }
+    .auth-btn { background: #f5a623; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
     .auth-error { color: #e74c3c; font-size: 12px; margin-top: 12px; }
   </style>
 </head>
 <body>
-
-<!-- Модалка пароля -->
+<!-- Модальное окно входа -->
 <div id="auth-modal" class="auth-modal">
   <div class="auth-card">
     <div class="auth-title">Доступ по паролю</div>
@@ -291,6 +107,7 @@
   </div>
 </div>
 
+<!-- Основное приложение -->
 <div id="main-app" style="display: none;">
 <div class="app-container">
   <div class="header">
@@ -304,7 +121,7 @@
     <div class="tab" data-tab="itogi">Итоги</div>
   </div>
 
-  <!-- Вкладка Вставить -->
+  <!-- Вкладка 1: Ввод данных -->
   <div id="tab-insert" class="tab-content active">
     <div class="card">
       <div class="section-title">Настройки</div>
@@ -328,17 +145,12 @@
       <div class="section-title">Вставь сообщения из чата</div>
       <textarea class="field-textarea" id="chat-in" placeholder="Дмитрий Самарский:
 06.05 764 
-9 просека - ракита 1 рейс
-9 просека - база 2 рейса
+9 просека - ракита 1 рейс9 просека - база 2 рейса
 Простой 2 часа 40 минут
 
 Вашик:
 07.05 эп
-Баланс тауер 4 часа чл
-
-Дмитрий Самарский:
-12.05 2054
-перевозка мини-погрузчика"></textarea>
+Баланс тауер 4 часа чл"></textarea>
       <button class="btn" id="parse-btn">РАЗОБРАТЬ</button>
     </div>
 
@@ -359,14 +171,12 @@
     </div>
   </div>
 
-  <!-- Вкладка Табель -->
+  <!-- Вкладка 2: Таблица -->
   <div id="tab-tabel" class="tab-content">
-    <div class="card" style="padding:0; overflow:hidden;">
+    <div class="card" style="padding:0;">
       <div class="table-wrapper">
         <table>
-          <thead>
-            <tr><th>Дата</th><th>Машина</th><th>Тип работы</th><th>Адрес</th><th>Груз</th><th>Заказчик</th><th>Часов</th><th>Рейсов</th><th>Начислено</th><th></th></tr>
-          </thead>
+          <thead><tr><th>Дата</th><th>Машина</th><th>Тип работы</th><th>Адрес</th><th>Груз</th><th>Заказчик</th><th>Часов</th><th>Рейсов</th><th>Начислено</th><th></th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
@@ -377,15 +187,14 @@
     </div>
   </div>
 
-  <!-- Вкладка Итоги -->
+  <!-- Вкладка 3: Итоги -->
   <div id="tab-itogi" class="tab-content">
     <div class="total-card">
       <div class="total-row"><span class="total-label">Всего часов</span><span class="total-value orange" id="tot-h">0</span></div>
       <div class="total-row"><span class="total-label">Всего рейсов</span><span class="total-value" id="tot-t">0</span></div>
       <div class="total-row"><span class="total-label">Начислено по табелю</span><span class="total-value orange" id="tot-p">0 ₽</span></div>
-      <div class="total-row"><span class="total-label">База расчёта <span id="baza-hint" style="font-size:10px;color:#888"></span></span><span class="total-value green" id="tot-baza">0 ₽</span></div>
-      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>
-      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>
+      <div class="total-row"><span class="total-label">База расчёта <span id="baza-hint" style="font-size:10px;"></span></span><span class="total-value green" id="tot-baza">0 ₽</span></div>
+      <div class="total-row"><span class="total-label">Официальный доход</span><input class="total-input" id="official" type="number" placeholder="28500"></div>      <div class="total-row"><span class="total-label">Авансы</span><input class="total-input" id="advance" type="number" placeholder="0"></div>
       <div class="total-row"><span class="total-label">Заправки (топл. карта)</span><input class="total-input" id="fuel" type="number" placeholder="0"></div>
       <div class="total-row" style="border-top:2px solid #2a2a2a; margin-top:8px; padding-top:14px;">
         <span class="total-label" style="font-weight:800;">НА РУКИ</span>
@@ -401,8 +210,8 @@
 </div>
 
 <script>
-  // ========== НАСТРОЙКИ ПАРОЛЯ ==========
-  const APP_PASSWORD = "tabel2025";   // измените на свой
+  // ========== ПАРОЛЬ ==========
+  const APP_PASSWORD = "tabel2025";
   if (sessionStorage.getItem("tabel_auth") === "true") {
     document.getElementById("auth-modal").style.display = "none";
     document.getElementById("main-app").style.display = "block";
@@ -429,15 +238,12 @@
   });
 
   // ========== СПРАВОЧНИКИ ==========
-  // Свои машины (принадлежат водителю)
   const OWN_MACHINES = new Set(['607','628','570','764','796','542','4850','4930','3977','6547','7368']);
-  // Все машины (включая чужие, для распознавания в грузе)
   const ALL_MACHINES = new Set([...OWN_MACHINES, '2054']);
   const MACHINE_LABELS = {
     '4850':'Мини 4850','4930':'Мини 4930','3977':'Мини 3977','6547':'Мини 6547',
     '607':'Эвак 607','628':'Эвак 628',
-    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',
-    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'
+    '570':'Самосвал 570','764':'Самосвал 764','796':'Самосвал 796',    '542':'Самосвал 542','2054':'Мини (заказчика)','7368':'Экскаватор-погрузчик'
   };
   const ORG_CLIENTS = [
     ['нард строй','Нарт-строй'],['нарт строй','Нарт-строй'],['нарт-строй','Нарт-строй'],
@@ -455,7 +261,7 @@
     return '';
   }
 
-  function findMachinesInText(text, includeAll = true) {
+  function findMachinesInText(text, includeAll) {
     const set = includeAll ? ALL_MACHINES : OWN_MACHINES;
     const found = [];
     for (const num of set) {
@@ -486,8 +292,7 @@
       const n = parseInt(mm[1]);
       if (!ALL_MACHINES.has(String(n))) return n;
     }
-    return null;
-  }
+    return null;  }
   function extractClient(text) {
     const tl = text.toLowerCase();
     if (/\bчл\b/.test(tl)) return 'Частное лицо';
@@ -497,7 +302,7 @@
     return '';
   }
   function extractCargo(text) {
-    const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот','каток','подъёмник','подъемник','погрузчик','вилочный','мини-экскаватор','укладчик','оборудование'];
+    const cargo = ['чернозем','песок','щебень','грунт','мусор','щетка','гидромолот','каток','подъёмник','погрузчик','вилочный','оборудование'];
     const tl = text.toLowerCase();
     const found = cargo.filter(c => tl.includes(c));
     return found.map(c => c.charAt(0).toUpperCase()+c.slice(1)).join(', ');
@@ -536,11 +341,9 @@
     if (dtype === 'dump') return 'Самосвал';
     return '';
   }
-
   let rows = [];
   let uid = 1;
 
-  // Парсер
   function parsePaste() {
     const text = document.getElementById('chat-in').value.trim();
     if (!text) return;
@@ -549,22 +352,19 @@
     const newRows = [];
     while (i < lines.length) {
       const line = lines[i].trim();
-      // Блок водителя: любое имя с двоеточием
       if (/^[А-ЯЁа-яёA-Za-z][^:\n]{1,40}:\s*$/.test(line)) {
         i++;
         while (i < lines.length && !lines[i].trim()) i++;
         if (i >= lines.length) break;
         let header = lines[i].trim();
         i++;
-        // Заменяем "эп" на "7368" в заголовке
         header = header.replace(/\bэп\b/gi, '7368');
         const tokens = header.split(/\s+/);
-        let date = null;
-        let driverMachine = '';
+        let date = null, driverMachine = '';
         for (const tok of tokens) {
           const d = parseDate(tok);
           if (d && !date) { date = d; continue; }
-          if (OWN_MACHINES.has(tok)) { driverMachine = tok; }
+          if (OWN_MACHINES.has(tok)) driverMachine = tok;
         }
         if (!driverMachine) {
           const hm = findMachinesInText(header, false);
@@ -577,7 +377,6 @@
           i++;
           if (!tline || isSkip(tline)) continue;
           if (!isTripLine(tline)) continue;
-          // Заменяем "эп" на "7368" в строке рейса
           let processedLine = tline.replace(/\bэп\b/gi, '7368');
           const lineMachines = findMachinesInText(processedLine, true);
           const hours = extractHours(processedLine);
@@ -591,23 +390,13 @@
           if (machineType(driverMachine) === 'evak' && lineMachines.some(m => ['4850','4930','3977','6547','7368','2054'].includes(m))) {
             const minis = lineMachines.filter(m => ['4850','4930','3977','6547','7368','2054'].includes(m));
             cargoFinal = minis.map(m => MACHINE_LABELS[m]||m).join(', ') + (cargo ? ', '+cargo : '');
-          }
-          newRows.push({
-            id: uid++,
-            date,
-            machine: MACHINE_LABELS[driverMachine] || driverMachine,
-            workType,
-            address: addr,
-            cargo: cargoFinal,
-            client,
-            hours: hours || '',
-            trips: trips || '',
-            pay: money || '',
+          }          newRows.push({
+            id: uid++, date, machine: MACHINE_LABELS[driverMachine] || driverMachine,
+            workType, address: addr, cargo: cargoFinal, client,
+            hours: hours || '', trips: trips || '', pay: money || '',
           });
         }
-      } else {
-        i++;
-      }
+      } else { i++; }
     }
     newRows.sort((a,b) => {
       const [ad,am] = a.date.split('.').map(Number);
@@ -646,23 +435,21 @@
     recalc();
     renderTableOnly();
   }
-
   function del(id) {
     rows = rows.filter(x=>x.id!==id);
     render();
   }
-
   function renderTableOnly() {
     const tbody = document.getElementById('tbody');
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто — вставь сообщения или добавь строку вручную</div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10"><div style="text-align:center;padding:32px;color:#888;">Пусто</div></td></tr>';
       return;
     }
     tbody.innerHTML = rows.map(r => {
       const mkey = Object.keys(MACHINE_LABELS).find(k => MACHINE_LABELS[k] === r.machine) || '';
       const mtype = machineType(mkey);
       const badgeCls = mtype==='mini'?'badge-mini':mtype==='evak'?'badge-evak':mtype==='dump'?'badge-dump':'';
-      return `<tr data-id="${r.id}">
+      return `<tr>
         <td class="c-date">${r.date}</td>
         <td class="c-machine"><span class="badge ${badgeCls}">${r.machine||'—'}</span></td>
         <td style="font-size:10px;color:#aaa;">${r.workType}</td>
@@ -671,7 +458,7 @@
         <td style="color:#aaa;">${r.client||'—'}</td>
         <td class="c-num"><input type="number" value="${r.hours}" onchange="upd(${r.id},'hours',this.value)"></td>
         <td class="c-num"><input type="number" value="${r.trips}" onchange="upd(${r.id},'trips',this.value)"></td>
-        <td class="c-pay"><input type="number" value="${r.pay}" onchange="upd(${r.id},'pay',this.value)" placeholder="—"></td>
+        <td class="c-pay"><input type="number" value="${r.pay}" onchange="upd(${r.id},'pay',this.value)"></td>
         <td class="c-del"><button onclick="del(${r.id})">✕</button></td>
       </tr>`;
     }).join('');
@@ -696,17 +483,12 @@
     document.getElementById('tot-rest').textContent = fmt(rest)+' ₽';
   }
 
-  function fmt(n){ return Number(n||0).toLocaleString('ru-RU'); }
+  function fmt(n) { return Number(n||0).toLocaleString('ru-RU'); }
 
   function saveSettings() {
-    const s = {
-      name: document.getElementById('drv-name').value,
-      oklad: document.getElementById('drv-oklad').value,
-      period: document.getElementById('drv-period').value
-    };
+    const s = { name: document.getElementById('drv-name').value, oklad: document.getElementById('drv-oklad').value, period: document.getElementById('drv-period').value };
     localStorage.setItem('tabel_settings', JSON.stringify(s));
-  }
-  function loadSettings() {
+  }  function loadSettings() {
     try {
       const s = JSON.parse(localStorage.getItem('tabel_settings')||'{}');
       if (s.name) document.getElementById('drv-name').value = s.name;
@@ -724,11 +506,8 @@
   function copyText() {
     const name = document.getElementById('drv-name').value.trim()||'Водитель';
     const period = document.getElementById('drv-period').value.trim();
-    let t = `ТАБЕЛЬ: ${name}\n`;
-    if (period) t += `Период: ${period}\n`;
-    t += '─'.repeat(50)+'\n';
-    t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n';
-    t += '─'.repeat(50)+'\n';
+    let t = `ТАБЕЛЬ: ${name}\n` + (period ? `Период: ${period}\n` : '') + '─'.repeat(50)+'\n';
+    t += 'Дата    Машина          Адрес                  Ч   Рей  Нач.\n' + '─'.repeat(50)+'\n';
     rows.forEach(r=>{
       const d = r.date.padEnd(7);
       const m = (r.machine||'').substring(0,15).padEnd(16);
@@ -758,89 +537,105 @@
   function clearAll() {
     if(!confirm('Очистить всё?')) return;
     rows = [];
-    document.getElementById('advance').value='';
-    document.getElementById('official').value='';
+    document.getElementById('advance').value='';    document.getElementById('official').value='';
     document.getElementById('fuel').value='';
     document.getElementById('chat-in').value='';
     render();
   }
 
-  // Генерация PDF через html2pdf
-  async function generatePDFBlob() {
-    // Создаём временный элемент с отчётом
-    const name = document.getElementById('drv-name').value.trim()||'Водитель';
-    const period = document.getElementById('drv-period').value.trim()||'';
-    const adv = parseFloat(document.getElementById('advance').value)||0;
-    const off = parseFloat(document.getElementById('official').value)||0;
-    const fuel = parseFloat(document.getElementById('fuel').value)||0;
-    const oklad = parseFloat(document.getElementById('drv-oklad').value)||0;
-    const tH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
-    const tT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
-    const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
-    const base = Math.max(tP, oklad);
-    const rest = base - off - adv - fuel;
-    const rowsHtml = rows.map(r => `
-      <tr>
-        <td>${r.date}</td>
-        <td>${r.machine||'—'}</td>
-        <td>${r.workType||'—'}</td>
-        <td>${r.address||'—'}</td>
-        <td>${r.cargo||'—'}</td>
-        <td>${r.client||'—'}</td>
-        <td style="text-align:center">${r.hours||'—'}</td>
-        <td style="text-align:center">${r.trips||'—'}</td>
-        <td style="text-align:right">${r.pay ? fmt(r.pay)+' ₽' : '—'}</td>
-      </tr>
-    `).join('');
-    const baseNote = oklad > 0 ? (tP >= oklad ? ' (табель > оклад)' : ' (оклад > табель)') : '';
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head><meta charset="UTF-8"><title>Табель</title>
-      <style>
-        body { font-family: 'Inter', Arial, sans-serif; margin: 20px; font-size: 12px; }
-        h1 { font-size: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { background: #1a1a1a; color: white; padding: 8px; text-align: left; }
-        td { border-bottom: 1px solid #ccc; padding: 6px; }
-        .totals { margin-top: 20px; max-width: 400px; }
-        .row { display: flex; justify-content: space-between; padding: 5px 0; }
-        .hand { font-size: 18px; font-weight: bold; color: green; margin-top: 10px; }
-      </style>
-      </head>
-      <body>
-      <h1>Табель ${name}</h1>
-      <div>Период: ${period}</div>
-      <table>
-        <thead><tr><th>Дата</th><th>Машина</th><th>Тип работы</th><th>Адрес</th><th>Груз</th><th>Заказчик</th><th>Часов</th><th>Рейсов</th><th>Начислено</th></tr></thead>
-        <tbody>${rowsHtml}</tbody>
-      </table>
-      <div class="totals">
-        <div class="row"><span>Всего часов:</span><span>${tH}</span></div>
-        <div class="row"><span>Всего рейсов:</span><span>${tT}</span></div>
-        <div class="row"><span>Начислено по табелю:</span><span>${fmt(tP)} ₽</span></div>
-        <div class="row"><span>База расчёта${baseNote}:</span><span>${fmt(base)} ₽</span></div>
-        ${off ? `<div class="row"><span>Официальный доход:</span><span>-${fmt(off)} ₽</span></div>` : ''}
-        ${adv ? `<div class="row"><span>Авансы:</span><span>-${fmt(adv)} ₽</span></div>` : ''}
-        ${fuel ? `<div class="row"><span>Заправки:</span><span>-${fmt(fuel)} ₽</span></div>` : ''}
-        <div class="row hand"><span>НА РУКИ</span><span>${fmt(rest)} ₽</span></div>
-      </div>
-      </body>
-      </html>
-    `;
-    const opt = { margin: [0.5,0.5,0.5,0.5], filename: 'tabel.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: false }, jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' } };
-    const element = document.createElement('div');
-    element.innerHTML = html;
-    element.style.position = 'absolute';
-    element.style.top = '-9999px';
-    document.body.appendChild(element);
-    const pdf = await html2pdf().set(opt).from(element).outputPdf('blob');
-    document.body.removeChild(element);
-    return pdf;
+  // ========== PDF ГЕНЕРАЦИЯ С ТРАНСЛИТЕРАЦИЕЙ ==========
+  
+  // Функция для перевода кириллицы в латиницу (чтобы PDF не был пустым)
+  function transliterate(word) {
+    if (!word) return '';
+    const a = {"Ё":"YO","Й":"I","Ц":"TS","У":"U","К":"K","Е":"E","Н":"N","Г":"G","Ш":"SH","Щ":"SCH","З":"Z","Х":"H","Ъ":"'","ё":"yo","й":"i","ц":"ts","у":"u","к":"k","е":"e","н":"n","г":"g","ш":"sh","щ":"sch","з":"z","х":"h","ъ":"'","Ф":"F","Ы":"I","В":"V","А":"A","П":"P","Р":"R","О":"O","Л":"L","Д":"D","Ж":"ZH","Э":"E","ф":"f","ы":"i","в":"v","а":"a","п":"p","р":"r","о":"o","л":"l","д":"d","ж":"zh","э":"e","Я":"Ya","Ч":"CH","С":"S","М":"M","И":"I","Т":"T","Ь":"'","Б":"B","Ю":"YU","я":"ya","ч":"ch","с":"s","м":"m","и":"i","т":"t","ь":"'","б":"b","ю":"yu"};
+    return word.split('').map(function (char) { 
+      return a[char] || char; 
+    }).join("");
   }
 
-  async function savePDF() {
-    try {
+  async function generatePDFBlob() {
+    return new Promise((resolve) => {
+      const { jsPDF } = window.jspdf;
+      const name = document.getElementById('drv-name').value.trim() || 'Voditel';
+      const period = document.getElementById('drv-period').value.trim() || '';
+      const adv = parseFloat(document.getElementById('advance').value) || 0;
+      const off = parseFloat(document.getElementById('official').value) || 0;
+      const fuel = parseFloat(document.getElementById('fuel').value) || 0;
+      const oklad = parseFloat(document.getElementById('drv-oklad').value) || 0;
+      
+      const tP = rows.reduce((a,r)=>a+(parseFloat(r.pay)||0),0);
+      const tH = rows.reduce((a,r)=>a+(parseFloat(r.hours)||0),0);
+      const tT = rows.reduce((a,r)=>a+(parseInt(r.trips)||0),0);
+      const base = Math.max(tP, oklad);
+      const rest = base - off - adv - fuel;
+
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      
+      // Заголовки
+      doc.setFontSize(16);
+      doc.setFont('helvetica','bold');
+      doc.text('TABEL: ' + transliterate(name), 14, 16);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(120);
+      if (period) doc.text('Period: ' + transliterate(period), 14, 23);
+      
+      doc.setTextColor(0);
+      
+      // Таблица (транслитерируем все ячейки)
+      const head = [['Data','Mashina','Tip raboty','Marshrut','Gruz','Zakazchik','Chasov','Reysov','Nachisleno RUB']];
+      const body = rows.map(r => [        r.date, 
+        transliterate(r.machine || '—'), 
+        transliterate(r.workType || '—'), 
+        transliterate((r.address||'—').substring(0,40)), 
+        transliterate((r.cargo||'—').substring(0,25)), 
+        transliterate((r.client||'—').substring(0,20)),
+        r.hours || '—', 
+        r.trips || '—', 
+        r.pay ? fmt(r.pay) : '—'
+      ]);
+
+      doc.autoTable({
+        head, body, startY: period ? 28 : 22, styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [245, 166, 35], textColor: 0, fontStyle: 'bold' }, // Оранжевая шапка
+        alternateRowStyles: { fillColor: [245,245,245] },
+        columnStyles: { 0: { cellWidth: 16 }, 1: { cellWidth: 24 }, 2: { cellWidth: 30 }, 3: { cellWidth: 55 }, 4: { cellWidth: 35 }, 5: { cellWidth: 28 }, 6: { cellWidth: 14 }, 7: { cellWidth: 14 }, 8: { cellWidth: 22, halign: 'right' } },
+        margin: { left: 14, right: 14 }
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 8;
+      doc.setFontSize(9);
+      doc.setFont('helvetica','bold');
+      
+      const sumLines = [
+        ['Vsego chasov:', String(tH)], 
+        ['Vsego reysov:', String(tT)], 
+        ['Nachisleno po tabelyu:', fmt(tP) + ' RUB'], 
+        ['Baza rascheta:', fmt(base) + ' RUB']
+      ];
+      if (off) sumLines.push(['Ofits. dokhod:', '-' + fmt(off) + ' RUB']);
+      if (adv) sumLines.push(['Avans:', '-' + fmt(adv) + ' RUB']);
+      if (fuel) sumLines.push(['Zapravki:', '-' + fmt(fuel) + ' RUB']);
+      sumLines.push(['NA RUKI:', fmt(rest) + ' RUB']);
+
+      let y = finalY;
+      sumLines.forEach((sl, idx) => {
+        if (idx === sumLines.length-1) { doc.setFontSize(12); doc.setTextColor(46, 204, 113); } // Зеленый для итого
+        else { doc.setFontSize(9); doc.setTextColor(0); }
+        
+        doc.text(sl[0], 14, y);
+        doc.text(sl[1], 80, y, { align: 'right' });
+        y += 6;
+      });
+
+      const pdfBlob = doc.output('blob');
+      resolve(pdfBlob);
+    });
+  }
+
+  async function savePDF() {    try {
       const blob = await generatePDFBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -852,7 +647,7 @@
   }
 
   async function sharePDF() {
-    if (!navigator.share) { alert('Ваш браузер не поддерживает отправку файлов. Используйте кнопку "Сохранить PDF".'); return; }
+    if (!navigator.share) { alert('Ваш браузер не поддерживает отправку файлов'); return; }
     try {
       const blob = await generatePDFBlob();
       const file = new File([blob], 'tabel.pdf', { type: 'application/pdf' });
@@ -860,12 +655,8 @@
     } catch(e) { if (e.name !== 'AbortError') alert('Ошибка при отправке'); }
   }
 
-  function render() {
-    renderTableOnly();
-    recalc();
-  }
+  function render() { renderTableOnly(); recalc(); }
 
-  // Переключение вкладок
   document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       const tabId = tab.getAttribute('data-tab');
